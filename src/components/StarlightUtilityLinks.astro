@@ -1,28 +1,5 @@
 ---
 import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
-
-const generatedApiDocsUrl = 'https://gdzig.github.io/gdzig/';
 ---
 
 <SocialIcons />
-<a class="api-docs-link" href={generatedApiDocsUrl}>API Docs</a>
-
-<style>
-  @layer starlight.core {
-    .api-docs-link {
-      color: var(--sl-color-text-accent);
-      font-size: var(--sl-text-sm);
-      font-weight: 600;
-      line-height: 1;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .api-docs-link:hover,
-    .api-docs-link:focus-visible {
-      color: var(--sl-color-white);
-      text-decoration: underline;
-      text-underline-offset: 0.25rem;
-    }
-  }
-</style>

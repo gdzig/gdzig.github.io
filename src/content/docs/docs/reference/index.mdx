@@ -1,6 +1,31 @@
 ---
-title: Reference — Guide in progress
-description: Curated human-written GDZig project facts.
+title: Reference
+description: Generated API references for GDZig organization packages.
 ---
 
-Reference pages will collect supported versions, project conventions, compatibility notes, and WebAssembly caveats. Use the [generated API docs](https://gdzig.github.io/gdzig/) for exact symbols and signatures.
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Use these generated API references for exact Zig symbols and signatures.
+
+<CardGrid>
+  <LinkCard
+    title="GDZig API reference"
+    href="https://gdzig.github.io/gdzig/"
+    description="Godot 4 Zig bindings, generated types, methods, and utility APIs."
+  />
+  <LinkCard
+    title="BBCodeZ API reference"
+    href="https://gdzig.github.io/bbcodez/"
+    description="BBCode parsing and formatting APIs."
+  />
+  <LinkCard
+    title="CaseZ API reference"
+    href="https://gdzig.github.io/casez/"
+    description="Comptime and runtime case conversion APIs."
+  />
+  <LinkCard
+    title="OopZ API reference"
+    href="https://gdzig.github.io/oopz/"
+    description="Helpers for opaque class hierarchies and comptime-checked casts."
+  />
+</CardGrid>

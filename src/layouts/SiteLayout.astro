@@ -11,13 +11,11 @@ const { title, description } = Astro.props;
 
 const repositoryUrl = 'https://github.com/gdzig/gdzig';
 const discordUrl = 'https://discord.gg/GEUZGRGeDj';
-const generatedApiDocsUrl = 'https://gdzig.github.io/gdzig/';
 
 const primaryLinks = [
   { href: '/blog/', label: 'Blog' },
   { href: '/showcase/', label: 'Showcase' },
   { href: '/docs/', label: 'Docs' },
-  { href: generatedApiDocsUrl, label: 'API Docs' },
 ];
 ---
 
@@ -128,7 +126,6 @@ const primaryLinks = [
           <li><a href="/blog/">Blog</a></li>
           <li><a href="/showcase/">Showcase</a></li>
           <li><a href="/docs/">Docs</a></li>
-          <li><a href={generatedApiDocsUrl}>API Docs</a></li>
           <li><a href={repositoryUrl}>GitHub</a></li>
           <li><a href={discordUrl}>Discord</a></li>
         </ul>

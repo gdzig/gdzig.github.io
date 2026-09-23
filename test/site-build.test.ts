@@ -7,7 +7,13 @@ import { spawnSync } from 'node:child_process';
 const testDirectory = dirname(fileURLToPath(import.meta.url));
 const siteDirectory = join(testDirectory, '..');
 const outputDirectory = join(siteDirectory, 'dist');
-const generatedApiDocsHref = 'href="https://gdzig.github.io/gdzig/"';
+const apiReferenceHref = 'href="/docs/reference/"';
+const generatedApiDocsHrefs = [
+  'href="https://gdzig.github.io/gdzig/"',
+  'href="https://gdzig.github.io/bbcodez/"',
+  'href="https://gdzig.github.io/casez/"',
+  'href="https://gdzig.github.io/oopz/"',
+];
 
 
 async function readLinkedCss(html: string) {
@@ -35,12 +41,15 @@ function expectInOrder(html: string, values: string[]) {
 
 function expectTopLevelNavigation(html: string) {
   expect(html).toContain('class="wordmark" href="/"');
-  expectInOrder(html, ['href="/blog/"', 'href="/showcase/"', 'href="/docs/"', generatedApiDocsHref]);
+  expectInOrder(html, ['href="/blog/"', 'href="/showcase/"', 'href="/docs/"']);
+  for (const href of generatedApiDocsHrefs) {
+    expect(html).not.toContain(href);
+  }
 }
 
 
 function expectDocsTopLevelLinks(html: string) {
-  for (const href of ['href="/"', 'href="/blog/"', 'href="/showcase/"', 'href="/docs/"', generatedApiDocsHref]) {
+  for (const href of ['href="/"', 'href="/blog/"', 'href="/showcase/"', 'href="/docs/"']) {
     expect(html).toContain(href);
   }
 }
@@ -131,7 +140,7 @@ describe('static site artifact', () => {
     expectTopLevelNavigation(html);
   });
 
-  test('links to project-page generated Zig API documentation without bundling it', async () => {
+  test('keeps generated API documentation links in the reference section', async () => {
     const [homeHtml, docsHtml, referenceHtml, howToHtml] = await Promise.all([
       readFile(join(outputDirectory, 'index.html'), 'utf8'),
       readFile(join(outputDirectory, 'docs', 'index.html'), 'utf8'),
@@ -139,8 +148,24 @@ describe('static site artifact', () => {
       readFile(join(outputDirectory, 'docs', 'how-to', 'index.html'), 'utf8'),
     ]);
 
+    for (const href of generatedApiDocsHrefs) {
+      expect(referenceHtml).toContain(href);
+      for (const html of [homeHtml, docsHtml, howToHtml]) {
+        expect(html).not.toContain(href);
+      }
+    }
+
+    for (const label of [
+      'GDZig API reference',
+      'BBCodeZ API reference',
+      'CaseZ API reference',
+      'OopZ API reference',
+    ]) {
+      expect(referenceHtml).toContain(label);
+    }
+    expect(referenceHtml).not.toContain('API docs');
+
     for (const html of [homeHtml, docsHtml, referenceHtml, howToHtml]) {
-      expect(html).toContain(generatedApiDocsHref);
       expect(html).not.toContain('href="/api/"');
     }
 
@@ -152,7 +177,7 @@ describe('static site artifact', () => {
     ['tutorials', 'Tutorials — Guide in progress'],
     ['how-to', 'How-to guides — Guide in progress'],
     ['explanations', 'Explanations'],
-    ['reference', 'Reference — Guide in progress'],
+    ['reference', 'Reference'],
   ];
 
   test.each(docsSections)('contains the %s docs placeholder page', async (slug, heading) => {
@@ -182,7 +207,10 @@ describe('static site artifact', () => {
     for (const api of ['gdzig.math', 'std.math', 'gdzig.random', 'std.Random']) {
       expect(html).toContain(api);
     }
-    expect(html).toContain(generatedApiDocsHref);
+    expect(html).toContain(apiReferenceHref);
+    for (const href of generatedApiDocsHrefs) {
+      expect(html).not.toContain(href);
+    }
     expect(html).not.toContain('href="/api/"');
     expectDocsTopLevelLinks(html);
   });
@@ -199,8 +227,7 @@ describe('static site artifact', () => {
       'href="/docs/tutorials/"',
       'href="/docs/how-to/"',
       'href="/docs/explanations/"',
-      'href="/docs/reference/"',
-      generatedApiDocsHref,
+      apiReferenceHref,
     ]) {
       expect(html).toContain(href);
     }
