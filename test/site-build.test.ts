@@ -151,7 +151,7 @@ describe('static site artifact', () => {
   const docsSections = [
     ['tutorials', 'Tutorials — Guide in progress'],
     ['how-to', 'How-to guides — Guide in progress'],
-    ['explanations', 'Explanations — Guide in progress'],
+    ['explanations', 'Explanations'],
     ['reference', 'Reference — Guide in progress'],
   ];
 
@@ -159,6 +159,31 @@ describe('static site artifact', () => {
     const html = await readFile(join(outputDirectory, 'docs', slug, 'index.html'), 'utf8');
 
     expect(html).toContain(heading);
+    expectDocsTopLevelLinks(html);
+  });
+
+
+  test('contains the explanations overview', async () => {
+    const html = await readFile(join(outputDirectory, 'docs', 'explanations', 'index.html'), 'utf8');
+
+    expect(html).toContain('Explanations');
+    expect(html).toContain('href="/docs/explanations/math-and-random-apis/"');
+    expect(html).toContain('Choosing math and random APIs');
+    expectDocsTopLevelLinks(html);
+  });
+
+  test('contains the math and random API choice explanation', async () => {
+    const html = await readFile(
+      join(outputDirectory, 'docs', 'explanations', 'math-and-random-apis', 'index.html'),
+      'utf8',
+    );
+
+    expect(html).toContain('Choosing math and random APIs');
+    for (const api of ['gdzig.math', 'std.math', 'gdzig.random', 'std.Random']) {
+      expect(html).toContain(api);
+    }
+    expect(html).toContain(generatedApiDocsHref);
+    expect(html).not.toContain('href="/api/"');
     expectDocsTopLevelLinks(html);
   });
 
