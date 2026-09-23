@@ -55,6 +55,14 @@ function expectDocsTopLevelLinks(html: string) {
 }
 
 
+function expectStarlightLightPalette(css: string) {
+  const lightThemeRule = css.match(/:root\[data-theme=light\]\{[^}]*\}/)?.[0] ?? '';
+
+  expect(lightThemeRule).toContain('--sl-color-black:#fffaf2');
+  expect(lightThemeRule).toContain('--sl-color-white:#17130b');
+}
+
+
 function expectDesktopMobileMenuHidden(css: string) {
   const hiddenRuleIndex = css.search(/\.pico \.mobile-nav\{[^}]*display:none/);
   const mobileMediaIndex = css.indexOf('@media (width<=576px){', hiddenRuleIndex);
@@ -213,6 +221,14 @@ describe('static site artifact', () => {
     }
     expect(html).not.toContain('href="/api/"');
     expectDocsTopLevelLinks(html);
+  });
+
+
+  test('uses a light Starlight palette with a light page background', async () => {
+    const html = await readFile(join(outputDirectory, 'docs', 'index.html'), 'utf8');
+    const css = await readLinkedCss(html);
+
+    expectStarlightLightPalette(css);
   });
 
 
