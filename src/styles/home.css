@@ -197,6 +197,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.hero .actions {
   margin-top: 2rem;
 }
 
@@ -206,6 +210,18 @@
   border-width: 2px;
   border-radius: 999px;
   font-weight: 800;
+}
+
+.actions [role="button"] .link-icon {
+  flex: 0 0 auto;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.actions [role="button"]:has(.link-icon) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 
@@ -239,14 +255,93 @@ main > section:not(.hero),
 
 .section-heading h2,
 .status-panel h2 {
-  max-width: 16ch;
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 0.8rem;
+  font-size: clamp(2.25rem, 5vw, 4rem);
   line-height: 1.08;
   letter-spacing: -0.04em;
 }
 
+.section-heading p:not(.eyebrow) {
+  margin: 0;
+  color: var(--gdzig-eyebrow);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .grid article {
   border: 1px solid var(--pico-card-border-color);
+}
+
+.showcase-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+}
+
+.showcase-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 0.45rem;
+  padding: 0;
+  list-style: none;
+}
+
+.showcase-tags li {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  color: var(--gdzig-accent-text);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  background: var(--gdzig-secondary-hover-background);
+  border: 1px solid var(--gdzig-border);
+  border-radius: 999px;
+}
+
+.showcase-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.showcase-card-heading h3 {
+  margin: 0;
+}
+
+.showcase-author {
+  flex: 0 1 auto;
+  margin: 0;
+  line-height: 1;
+  color: var(--gdzig-muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.showcase-note {
+  display: block;
+  margin-top: -0.2rem;
+  color: var(--gdzig-muted);
+  margin-bottom: var(--pico-typography-spacing-vertical);
+}
+
+
+.showcase-grid h3 + p {
+  margin-top: 0;
+}
+
+.showcase-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+  border: 1px solid var(--gdzig-border);
+  border-radius: calc(var(--pico-border-radius) * 0.75);
 }
 
 .card-links article {

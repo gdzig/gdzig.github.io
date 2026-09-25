@@ -1,22 +1,80 @@
 ---
+import { getCollection } from 'astro:content';
+import ShowcaseLink from '../../components/ShowcaseLink.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 
-const exampleUrl = 'https://github.com/gdzig/gdzig/tree/master/example';
+const showcaseEntries = await getCollection('showcase');
+
+const sections = [
+  {
+    id: 'games',
+    title: 'Games',
+    description: 'Built with GDZig',
+    entries: showcaseEntries.filter((entry) => entry.data.category === 'games'),
+  },
+  {
+    id: 'extensions',
+    title: 'Extensions',
+    description: 'Native plugins for Godot',
+    entries: showcaseEntries.filter((entry) => entry.data.category === 'extensions'),
+  },
+].filter((section) => section.entries.length > 0);
 ---
 
 <SiteLayout
-  title="Showcase — Planned | GDZig"
-  description="Community projects built with GDZig will appear here."
+  title="Made with GDZig | GDZig"
+  description="Community projects built with GDZig."
 >
   <section class="hero stub-page" aria-labelledby="showcase-title">
     <p class="eyebrow">Community projects</p>
-    <h1 id="showcase-title">Showcase — Planned</h1>
-    <p>
-      Community projects built with GDZig will appear here. Use the example
-      project while this section grows.
-    </p>
-    <div class="actions" aria-label="Showcase actions">
-      <a href={exampleUrl} role="button">View the example project</a>
-    </div>
+    <h1 id="showcase-title">Made with GDZig</h1>
+    <p>Games, tools, and Godot extensions that use GDZig.</p>
   </section>
+
+  {sections.map((section) => (
+    <section aria-labelledby={`${section.id}-title`}>
+      <header class="section-heading">
+        <h2 id={`${section.id}-title`}>{section.title}</h2>
+        <p>{section.description}</p>
+      </header>
+      <div class="grid showcase-grid">
+        {section.entries.map((entry) => (
+          <article>
+            {entry.data.image && (
+              <img src={entry.data.image.src} alt={entry.data.image.alt} class="showcase-image" />
+            )}
+            {entry.data.tags.length > 0 && (
+              <ul class="showcase-tags" aria-label={`${entry.data.title} tags`}>
+                {entry.data.tags.map((tag) => <li>{tag}</li>)}
+              </ul>
+            )}
+            <div class="showcase-card-heading">
+              <h3><a href={entry.data.primaryLink.url}>{entry.data.title}</a></h3>
+              {entry.data.author && <span class="showcase-author">{entry.data.author}</span>}
+            </div>
+            <p>{entry.data.summary}</p>
+            {entry.data.note && <small class="showcase-note">{entry.data.note}</small>}
+            {entry.data.details.map((detail) => <p>{detail}</p>)}
+            <div class="actions" aria-label={`${entry.data.title} links`}>
+              <ShowcaseLink
+                href={entry.data.primaryLink.url}
+                label={entry.data.primaryLink.label}
+                icon={entry.data.primaryLink.icon}
+                accessibleLabel={`Open ${entry.data.title} on ${entry.data.primaryLink.label}`}
+              />
+              {entry.data.sourceLink && (
+                <ShowcaseLink
+                  href={entry.data.sourceLink.url}
+                  label={entry.data.sourceLink.label}
+                  icon={entry.data.sourceLink.icon}
+                  accessibleLabel={`Open ${entry.data.title} source on GitHub`}
+                  variant="secondary"
+                />
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
 </SiteLayout>

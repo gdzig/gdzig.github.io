@@ -1,0 +1,29 @@
+---
+import { siGithub, siGodotengine, siSteam } from 'simple-icons';
+
+type Icon = 'github' | 'godot' | 'steam';
+
+interface Props {
+  href: string;
+  label: string;
+  icon: Icon;
+  accessibleLabel: string;
+  variant?: 'primary' | 'secondary';
+}
+
+const { href, label, icon, accessibleLabel, variant = 'primary' } = Astro.props;
+const className = variant === 'secondary' ? 'secondary outline' : undefined;
+const icons = {
+  github: siGithub,
+  godot: siGodotengine,
+  steam: siSteam,
+};
+const selectedIcon = icons[icon];
+---
+
+<a href={href} role="button" class={className} aria-label={accessibleLabel}>
+  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path fill="currentColor" d={selectedIcon.path} />
+  </svg>
+  <span>{label}</span>
+</a>

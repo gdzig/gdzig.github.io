@@ -1,0 +1,70 @@
+[
+  {
+    "id": "vector-wave",
+    "title": "Vector Wave",
+    "author": "Silent Pixel",
+    "category": "games",
+    "primaryLink": {
+      "label": "Steam",
+      "url": "https://store.steampowered.com/app/2218500/Vector_Wave/",
+      "icon": "steam"
+    },
+    "image": {
+      "src": "/showcase/vector-wave.jpg",
+      "alt": "Vector Wave capsule art"
+    },
+    "summary": "Drop-in, pick-up powerful weapons and blast your friends into the void in this 2.5D party platform shooter, where the bullets don’t hurt, but the knockback does!",
+    "tags": ["2.5D", "Party platform shooter", "Co-op"],
+    "note": "The currently accessible demo is the old Unity version. Zig version coming soon!"
+  },
+  {
+    "id": "native-video",
+    "title": "Native Video",
+    "author": "Clay Tercek",
+    "category": "extensions",
+    "primaryLink": {
+      "label": "Asset Store",
+      "url": "https://store.godotengine.org/asset/claytercek/native-video/",
+      "icon": "godot"
+    },
+    "sourceLink": {
+      "label": "Source",
+      "url": "https://github.com/claytercek/godot-native-video",
+      "icon": "github"
+    },
+    "image": {
+      "src": "/showcase/native-video.webp",
+      "alt": "Native Video capsule art"
+    },
+    "summary": "Native Video provides hardware-accelerated MP4 playback for H.264 and HEVC.",
+    "tags": ["Video plugin", "MP4", "Hardware decode"],
+    "details": [
+      "It uses the operating system decoder and works with Godot's stock VideoStreamPlayer."
+    ]
+  },
+  {
+    "id": "hap-video",
+    "title": "Hap Video",
+    "author": "Clay Tercek",
+    "category": "extensions",
+    "primaryLink": {
+      "label": "Asset Store",
+      "url": "https://store.godotengine.org/asset/claytercek/hap-video/",
+      "icon": "godot"
+    },
+    "sourceLink": {
+      "label": "Source",
+      "url": "https://github.com/claytercek/godot-hap-video",
+      "icon": "github"
+    },
+    "image": {
+      "src": "/showcase/hap-video.webp",
+      "alt": "Hap Video capsule art"
+    },
+    "summary": "Hap Video plays Hap-encoded QuickTime and MOV files with GPU-native decoding.",
+    "tags": ["Video plugin", "Hap", "GPU decode"],
+    "details": [
+      "It targets installations, live visuals, and projects that need several high-resolution video layers at once."
+    ]
+  }
+]

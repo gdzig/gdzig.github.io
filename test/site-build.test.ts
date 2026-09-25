@@ -197,15 +197,6 @@ describe('static site artifact', () => {
     expectTopLevelNavigation(html);
   });
 
-  test('contains the Showcase placeholder page', async () => {
-    const html = await readFile(join(outputDirectory, 'showcase', 'index.html'), 'utf8');
-
-    expect(html).toContain('Showcase — Planned');
-    expect(html).toContain('Community projects built with GDZig will appear here.');
-    expect(html).toContain('View the example project');
-    expect(html).toContain('href="https://github.com/gdzig/gdzig/tree/master/example"');
-    expectTopLevelNavigation(html);
-  });
 
   test('keeps generated API documentation links in the reference section', async () => {
     const [homeHtml, docsHtml, referenceHtml, howToHtml] = await Promise.all([
