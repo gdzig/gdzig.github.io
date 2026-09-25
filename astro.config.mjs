@@ -11,6 +11,7 @@ export default defineConfig({
       description: 'Human-written guides for building Godot extensions with Zig.',
       customCss: ['./src/styles/starlight.css'],
       components: {
+        Head: './src/components/StarlightHead.astro',
         SocialIcons: './src/components/StarlightUtilityLinks.astro',
       },
       social: [

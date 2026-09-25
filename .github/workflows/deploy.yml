@@ -28,8 +28,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build site
-        run: mise run build
+      - name: Build and test site
+        run: mise run test
+        env:
+          PUBLIC_POSTHOG_PROJECT_TOKEN: ${{ vars.PUBLIC_POSTHOG_PROJECT_TOKEN }}
+          PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

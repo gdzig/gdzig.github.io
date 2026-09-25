@@ -1,6 +1,8 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { readFile, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { runInNewContext } from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
@@ -127,6 +129,63 @@ describe('static site artifact', () => {
     expectDesktopMobileMenuHidden(css);
   });
 
+
+  test('initializes pageview-only cookieless analytics on marketing and docs pages', async () => {
+    for (const path of ['index.html', join('docs', 'index.html')]) {
+      const html = await readFile(join(outputDirectory, path), 'utf8');
+      const script = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)]
+        .map(([, body]) => body)
+        .find((body) => body.includes('posthog.init(apiKey'));
+      expect(script).toBeDefined();
+
+      const context: Record<string, unknown> = {
+        document: {
+          createElement: () => ({}),
+          getElementsByTagName: () => [{ parentNode: { insertBefore: () => {} } }],
+        },
+      };
+      context.window = context;
+      runInNewContext(script!, context);
+
+      const [token, options] = (
+        context.posthog as { _i: [string, Record<string, unknown>, string][] }
+      )._i[0];
+      expect(token).toBeTruthy();
+      expect(JSON.parse(JSON.stringify(options))).toMatchObject({
+        cookieless_mode: 'always',
+        person_profiles: 'never',
+        capture_pageview: true,
+        autocapture: false,
+        disable_session_recording: true,
+        capture_pageleave: false,
+        capture_dead_clicks: false,
+        rageclick: false,
+        capture_heatmaps: false,
+        capture_performance: false,
+        advanced_disable_flags: true,
+        capture_exceptions: false,
+      });
+    }
+  });
+
+  test('rejects a production build without PostHog configuration', async () => {
+    const output = await mkdtemp(join(tmpdir(), 'gdzig-posthog-test-'));
+    try {
+      const result = spawnSync('bun', ['run', 'build:astro', '--outDir', output], {
+        cwd: siteDirectory,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PUBLIC_POSTHOG_PROJECT_TOKEN: '',
+          PUBLIC_POSTHOG_HOST: '',
+        },
+      });
+      expect(result.status).not.toBe(0);
+      expect(result.stderr + result.stdout).toContain('PUBLIC_POSTHOG_PROJECT_TOKEN');
+    } finally {
+      await rm(output, { recursive: true, force: true });
+    }
+  }, 180_000);
 
   test('contains the Blog placeholder page', async () => {
     const html = await readFile(join(outputDirectory, 'blog', 'index.html'), 'utf8');

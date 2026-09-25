@@ -1,4 +1,5 @@
 ---
+import PostHog from '../components/posthog.astro';
 import '@picocss/pico/css/pico.conditional.min.css';
 import '../styles/home.css';
 
@@ -24,6 +25,7 @@ const primaryLinks = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <PostHog />
     <script is:inline>
       (() => {
         const storageKey = 'starlight-theme';
