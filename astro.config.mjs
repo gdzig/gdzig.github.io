@@ -27,7 +27,17 @@ export default defineConfig({
           collapsed: false,
           items: [
             { label: 'Overview', link: '/docs/' },
-            { label: 'Tutorials', link: '/docs/tutorials/' },
+            {
+              label: 'Tutorials',
+              collapsed: false,
+              items: [
+                { label: 'Overview', link: '/docs/tutorials/' },
+                {
+                  label: 'Creating your first extension',
+                  link: '/docs/tutorials/first-extension/',
+                },
+              ],
+            },
             { label: 'How-to guides', link: '/docs/how-to/' },
             {
               label: 'Explanations',
