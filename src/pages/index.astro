@@ -1,110 +1,157 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import '../styles/landing.css';
 
+const godotVersion = '4.7.2';
+const zigVersion = '0.17.0';
 const exampleUrl = 'https://github.com/gdzig/gdzig/tree/master/example';
+
+const docSections = [
+  {
+    href: '/docs/tutorials/',
+    title: 'Tutorials',
+    text: 'Guided learning paths will walk through complete GDZig projects from first build to Godot integration.',
+  },
+  {
+    href: '/docs/how-to/',
+    title: 'How-to guides',
+    text: 'Task-focused guides will cover direct procedures such as building an extension and registering Godot-facing APIs.',
+  },
+  {
+    href: '/docs/explanations/',
+    title: 'Explanations',
+    text: 'Concept pages will explain architecture, ownership, memory, and why generated API docs stay separate from guided docs.',
+  },
+  {
+    href: '/docs/reference/',
+    title: 'Reference',
+    text: 'Curated project reference will collect supported versions, conventions, compatibility notes, and WebAssembly caveats.',
+  },
+];
 ---
 
 <SiteLayout
+  variant="landing"
   title="GDZig | Idiomatic Zig bindings for Godot 4"
   description="GDZig provides idiomatic Zig bindings for Godot 4."
 >
-  <section class="hero" aria-labelledby="hero-title">
-    <p class="eyebrow">Godot extensions in Zig</p>
-    <h1 id="hero-title">Idiomatic Zig bindings for Godot 4.</h1>
-    <!-- Convert versions to variables -->
-    <p>
-      GDZig is under rapid development while the project shapes the API for Godot
-      4.7.2 and Zig 0.17.0. Use it today with care, and expect bugs or missing
-      features before a stable release.
-    </p>
-    <div class="actions" aria-label="Primary actions">
-      <a href="/docs/" role="button">Read the docs</a>
+  <section class="band band-hero" aria-labelledby="hero-title">
+    <div class="container hero-content">
+      <p class="hero-kicker">Godot extensions in Zig</p>
+      <h1 id="hero-title">Idiomatic Zig bindings for Godot 4</h1>
+      <p class="hero-sub">Build Godot games and extensions with Zig</p>
+      <p class="hero-meta">
+        <span>Zig {zigVersion}</span>
+        <span aria-hidden="true">&bull;</span>
+        <span>Godot {godotVersion}</span>
+        <span aria-hidden="true">&bull;</span>
+        <span>Rapid development</span>
+      </p>
+      <div class="hero-actions" aria-label="Primary actions">
+        <a href="/docs/" role="button">Read the docs</a>
+        <a href="#learn-more" role="button" class="outline">Learn more</a>
+      </div>
     </div>
   </section>
 
-  <section aria-labelledby="audiences-title">
-    <header class="section-heading">
-      <p class="eyebrow">Choose your path</p>
-      <h2 id="audiences-title">Start with the work you need to do.</h2>
-    </header>
-    <div class="grid">
-      <article>
-        <h3>For extension developers</h3>
-        <p>
-          Start here if you want to build a Godot extension in Zig. The first
-          guides will cover project setup, class registration, and generated API
-          lookup.
-        </p>
-      </article>
-      <article>
-        <h3>For game developers</h3>
-        <p>
-          Start here if you want to understand whether GDZig fits your Godot
-          project. Begin with the example project and project status notes.
-        </p>
-      </article>
+  <section id="learn-more" class="band band-dark" aria-labelledby="audiences-title">
+    <div class="container">
+      <header class="band-heading">
+        <h2 id="audiences-title">Choose your path</h2>
+        <p>Start with the work you need to do.</p>
+      </header>
+      <div class="columns columns-2 card-links">
+        <article class="feature">
+          <span class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"></path>
+            </svg>
+          </span>
+          <h3><a href="/docs/tutorials/first-extension/">For extension developers</a></h3>
+          <p>
+            Start here if you want to build a Godot extension in Zig. The first
+            guides will cover project setup, class registration, and generated API
+            lookup.
+          </p>
+        </article>
+        <article class="feature">
+          <span class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="6" width="18" height="12" rx="4"></rect>
+              <path d="M8 10v4M6 12h4M15.5 11h.01M17.5 13h.01"></path>
+            </svg>
+          </span>
+          <h3><a href={exampleUrl}>For game developers</a></h3>
+          <p>
+            Start here if you want to understand whether GDZig fits your Godot
+            project. Begin with the example project and project status notes.
+          </p>
+        </article>
+      </div>
     </div>
   </section>
 
-  <section aria-labelledby="docs-title">
-    <header class="section-heading">
-      <p class="eyebrow">Human-written docs</p>
-      <h2 id="docs-title">Use the documentation type that matches your task.</h2>
-    </header>
-    <div class="grid card-links">
-      <article>
-        <h3><a href="/docs/tutorials/">Tutorials</a></h3>
-        <p>
-          Guided learning paths will walk through complete GDZig projects from
-          first build to Godot integration.
-        </p>
-      </article>
-      <article>
-        <h3><a href="/docs/how-to/">How-to guides</a></h3>
-        <p>
-          Task-focused guides will cover direct procedures such as building an
-          extension and registering Godot-facing APIs.
-        </p>
-      </article>
-      <article>
-        <h3><a href="/docs/explanations/">Explanations</a></h3>
-        <p>
-          Concept pages will explain architecture, ownership, memory, and why
-          generated API docs stay separate from guided docs.
-        </p>
-      </article>
-      <article>
-        <h3><a href="/docs/reference/">Reference</a></h3>
-        <p>
-          Curated project reference will collect supported versions, conventions,
-          compatibility notes, and WebAssembly caveats.
-        </p>
-      </article>
+  <section class="band band-glow" aria-labelledby="status-title">
+    <div class="container band-narrow">
+      <h2 id="status-title" class="band-title">Project status</h2>
+      <p class="status-lede">
+        GDZig is under rapid development while the project shapes the API for
+        Godot <strong>{godotVersion}</strong> and Zig <strong>{zigVersion}</strong>.
+      </p>
+      <p class="status-emphasis">Use it today with care.</p>
+      <p class="status-note">Expect bugs or missing features before a stable release.</p>
     </div>
   </section>
 
-  <section aria-labelledby="site-sections-title">
-    <header class="section-heading">
-      <p class="eyebrow">Project updates and examples</p>
-      <h2 id="site-sections-title">Visible stubs keep future sections findable.</h2>
-    </header>
-    <div class="grid card-links">
-      <article>
-        <p class="status-label">Planned</p>
-        <h3><a href="/blog/">Blog</a></h3>
-        <p>
-          Release notes and project updates will live here. Until then, follow
-          the repository for current changes.
-        </p>
-      </article>
-      <article>
-        <p class="status-label">Draft</p>
-        <h3><a href="/showcase/">Showcase</a></h3>
-        <p>
-          Community projects built with GDZig will appear here. Current entries
-          include Vector Wave and Godot Asset Store video plugins.
-        </p>
-      </article>
+  <section class="band band-light" aria-labelledby="docs-title">
+    <div class="container">
+      <header class="band-heading">
+        <h2 id="docs-title">Documentation</h2>
+        <p>Use the documentation type that matches your task.</p>
+      </header>
+      <p class="rule-heading">Human-written docs</p>
+      <div class="columns columns-4 card-links">
+        {
+          docSections.map((section, index) => (
+            <article class="feature">
+              <span class="feature-icon feature-number" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <h3>
+                <a href={section.href}>{section.title}</a>
+              </h3>
+              <p>{section.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-lighter" aria-labelledby="site-sections-title">
+    <div class="container">
+      <header class="band-heading">
+        <h2 id="site-sections-title">Updates &amp; examples</h2>
+        <p>Visible stubs keep future sections findable.</p>
+      </header>
+      <div class="columns columns-2 card-links">
+        <article class="update">
+          <p class="update-label">Planned</p>
+          <h3><a href="/blog/">Blog</a></h3>
+          <p>
+            Release notes and project updates will live here. Until then, follow
+            the repository for current changes.
+          </p>
+        </article>
+        <article class="update">
+          <p class="update-label">Draft</p>
+          <h3><a href="/showcase/">Showcase</a></h3>
+          <p>
+            Community projects built with GDZig will appear here. Current entries
+            include Vector Wave and Godot Asset Store video plugins.
+          </p>
+        </article>
+      </div>
     </div>
   </section>
 </SiteLayout>
