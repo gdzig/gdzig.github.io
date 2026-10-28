@@ -91,21 +91,25 @@
 }
 
 .band-dark {
+  --pico-color: var(--landing-on-dark);
   color: var(--landing-on-dark);
   background: var(--landing-dark-2);
 }
 
 .band-light {
+  --pico-color: var(--landing-on-light);
   color: var(--landing-on-light);
   background: var(--landing-band-light);
 }
 
 .band-lighter {
+  --pico-color: var(--landing-on-light);
   color: var(--landing-on-light);
   background: var(--landing-band-lighter);
 }
 
 .band-hero {
+  --pico-color: var(--landing-on-dark);
   display: flex;
   align-items: center;
   min-height: min(100vh, 52rem);
@@ -127,6 +131,7 @@
 }
 
 .band-glow {
+  --pico-color: var(--landing-on-dark);
   color: var(--landing-on-dark);
   background:
     radial-gradient(ellipse 70% 90% at 50% 0%, rgba(246, 163, 29, 0.16), transparent 70%),
@@ -138,11 +143,6 @@
 }
 
 /* Hero typography */
-.band-hero h1,
-.band-hero p {
-  color: inherit;
-}
-
 .hero-kicker,
 .hero-sub,
 .hero-meta {
@@ -150,7 +150,7 @@
   text-transform: uppercase;
 }
 
-.hero-kicker {
+.pico .hero-kicker {
   margin-bottom: 1rem;
   color: var(--landing-accent);
   font-size: clamp(0.9rem, 1.6vw, 1.15rem);
@@ -159,6 +159,7 @@
 
 .band-hero h1 {
   max-width: 18ch;
+  color: var(--landing-on-dark);
   margin: 0 auto 1.25rem;
   font-size: clamp(2.25rem, 6vw, 4.5rem);
   font-weight: 800;
@@ -173,7 +174,7 @@
   font-weight: 300;
 }
 
-.hero-meta {
+.pico .hero-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -229,7 +230,7 @@
 }
 
 .band-heading h2,
-.band-title {
+.pico .band-title {
   margin-bottom: 0.5rem;
   color: inherit;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
@@ -249,7 +250,7 @@
   color: var(--landing-on-light-muted);
 }
 
-.rule-heading {
+.pico .rule-heading {
   margin: 0 0 3rem;
   padding-bottom: 0.5rem;
   color: var(--landing-on-light);
@@ -362,7 +363,7 @@
 }
 
 /* Status band */
-.status-lede {
+.pico .status-lede {
   margin-bottom: 1.5rem;
   color: var(--landing-on-dark-muted);
   font-size: clamp(1.1rem, 2.2vw, 1.5rem);
@@ -375,7 +376,7 @@
   font-weight: 700;
 }
 
-.status-emphasis {
+.pico .status-emphasis {
   margin-bottom: 0.5rem;
   color: var(--landing-accent);
   font-size: clamp(1.75rem, 4vw, 2.5rem);
@@ -383,7 +384,7 @@
   font-weight: 800;
 }
 
-.status-note {
+.pico .status-note {
   margin: 0;
   color: var(--landing-on-dark-muted);
   font-size: 1.1rem;
@@ -429,7 +430,7 @@
   color: var(--landing-on-light-muted);
 }
 
-.update-label {
+.pico .update-label {
   margin-bottom: 0.75rem;
   color: var(--landing-on-light-muted);
   font-size: 0.8rem;
