@@ -2,13 +2,16 @@
 import PostHog from '../components/posthog.astro';
 import '@picocss/pico/css/pico.conditional.min.css';
 import '../styles/home.css';
+import '../styles/landing.css';
 
 interface Props {
   title: string;
   description: string;
+  variant?: 'default' | 'landing';
 }
 
-const { title, description } = Astro.props;
+const { title, description, variant = 'default' } = Astro.props;
+const isLanding = variant === 'landing';
 
 const repositoryUrl = 'https://github.com/gdzig/gdzig';
 const discordUrl = 'https://discord.gg/GEUZGRGeDj';
@@ -17,6 +20,12 @@ const primaryLinks = [
   { href: '/blog/', label: 'Blog' },
   { href: '/showcase/', label: 'Showcase' },
   { href: '/docs/', label: 'Docs' },
+];
+
+const footerLinks = [
+  ...primaryLinks,
+  { href: repositoryUrl, label: 'GitHub' },
+  { href: discordUrl, label: 'Discord' },
 ];
 ---
 
@@ -83,9 +92,9 @@ const primaryLinks = [
 
     <title>{title}</title>
   </head>
-  <body class="pico home-page">
+  <body class="pico home-page" data-page={isLanding ? 'landing' : undefined}>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="container site-header">
+    <header class:list={['container', 'site-header', { 'site-header-overlay': isLanding }]}>
       <nav class="site-nav" aria-label="Primary">
         <ul class="brand-links">
           <li><a class="wordmark" href="/" aria-label="GDZig home">GDZig</a></li>
@@ -117,21 +126,40 @@ const primaryLinks = [
       </nav>
     </header>
 
-    <main id="main-content" class="container">
+    <main id="main-content" class={isLanding ? undefined : 'container'}>
       <slot />
     </main>
 
-    <footer class="container site-footer">
-      <p>Build Godot games and extensions with Zig.</p>
-      <nav aria-label="Footer">
-        <ul>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/showcase/">Showcase</a></li>
-          <li><a href="/docs/">Docs</a></li>
-          <li><a href={repositoryUrl}>GitHub</a></li>
-          <li><a href={discordUrl}>Discord</a></li>
-        </ul>
-      </nav>
-    </footer>
+    {
+      isLanding ? (
+        <footer class="landing-footer">
+          <div class="container landing-footer-inner">
+            <p>Build Godot games and extensions with Zig.</p>
+            <nav aria-label="Footer">
+              <ul>
+                {footerLinks.map((link) => (
+                  <li>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </footer>
+      ) : (
+        <footer class="container site-footer">
+          <p>Build Godot games and extensions with Zig.</p>
+          <nav aria-label="Footer">
+            <ul>
+              {footerLinks.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </footer>
+      )
+    }
   </body>
 </html>

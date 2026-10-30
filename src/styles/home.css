@@ -397,8 +397,8 @@ main > section:not(.hero),
     flex-direction: column;
   }
 
-  .primary-links,
-  .utility-links {
+  .pico .primary-links,
+  .pico .utility-links {
     display: none;
   }
 
