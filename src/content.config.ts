@@ -1,8 +1,9 @@
 import { defineCollection } from 'astro:content';
 import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
-import { file } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { blogSchema } from './lib/blog/schema';
 
 const showcaseLink = z.object({
   label: z.string(),
@@ -33,6 +34,10 @@ const showcase = defineCollection({
 });
 
 export const collections = {
+  blog: defineCollection({
+    loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+    schema: blogSchema,
+  }),
   docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
   showcase,
 };
