@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { externalDestination } from './browser-paths';
+import { fixtureProcess } from './fixture-process';
 
 const repository = fileURLToPath(new URL('../../', import.meta.url));
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -39,25 +40,7 @@ export default { ...base, cacheDir: './.astro-cache/', vite: { ...base.vite, cac
       env: { ...process.env, NODE_ENV: name === 'dev' ? 'development' : 'production', ASTRO_TELEMETRY_DISABLED: '1', STORYBOOK_DISABLE_TELEMETRY: '1' } });
     child.stdout!.on('data', data => { log.stdout = (log.stdout + data).slice(-128_000); });
     child.stderr!.on('data', data => { log.stderr = (log.stderr + data).slice(-128_000); });
-    let finished = false;
-    const completion = new Promise<number | null>(resolve => {
-      child.once('error', error => { log.stderr += error.message; finished = true; resolve(null); });
-      child.once('close', code => { finished = true; resolve(code); });
-    });
-    const signal = (name: NodeJS.Signals) => {
-      if (!child.pid) return;
-      try { process.kill(-child.pid, name); } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error; }
-    };
-    let stopping: Promise<void> | undefined;
-    const stop = () => stopping ??= (async () => {
-      signal('SIGTERM');
-      await Promise.race([completion, delay(1500)]);
-      signal('SIGKILL');
-      await Promise.race([completion, delay(1500)]);
-      stops.delete(stop);
-    })();
-    stops.add(stop);
-    return { completion, stop, finished: () => finished };
+    return fixtureProcess(child, stops, error => { log.stderr += error.message; });
   }
   async function port() {
     const server = createServer();

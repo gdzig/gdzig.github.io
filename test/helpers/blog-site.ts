@@ -2,6 +2,7 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { cp, mkdir, mkdtemp, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { fixtureProcess } from './fixture-process';
 
 const source = resolve(import.meta.dir, '../..');
 const commandTimeout = 180_000;
@@ -61,28 +62,8 @@ export default defineConfig({ ...base, cacheDir: './.astro-cache/' });
     let stdout = '', stderr = '';
     child.stdout!.on('data', data => { stdout = (stdout + data.toString()).slice(-128_000); });
     child.stderr!.on('data', data => { stderr = (stderr + data.toString()).slice(-128_000); });
-    let finished = false;
-    const completion = new Promise<number | null>(resolve => {
-      child.once('error', error => { stderr += `\n${error.message}`; finished = true; resolve(null); });
-      child.once('close', status => { finished = true; resolve(status); });
-    });
-    const signal = (name: NodeJS.Signals) => {
-      if (!child.pid) return;
-      try { process.kill(-child.pid, name); } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error;
-      }
-    };
-    let stopping: Promise<void> | undefined;
-    const stop = () => stopping ??= (async () => {
-      signal('SIGTERM');
-      await Promise.race([completion, delay(2_000)]);
-      // Kill the owned process group too, in case the CLI exited before a child.
-      signal('SIGKILL');
-      await Promise.race([completion, delay(2_000)]);
-      stops.delete(stop);
-    })();
-    stops.add(stop);
-    return { completion, stop, finished: () => finished, logs: () => ({ stdout, stderr }) };
+    const lifecycle = fixtureProcess(child, stops, error => { stderr += `\n${error.message}`; }, 2_000);
+    return { ...lifecycle, logs: () => ({ stdout, stderr }) };
   }
 
   async function postPath(id: string, extension: 'md' | 'mdx') {
