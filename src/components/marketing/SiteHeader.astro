@@ -1,0 +1,77 @@
+---
+interface Props {
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
+const repositoryUrl = 'https://github.com/gdzig/gdzig';
+const discordUrl = 'https://discord.gg/GEUZGRGeDj';
+const primaryLinks = [
+  { href: '/blog/', label: 'Blog' },
+  { href: '/showcase/', label: 'Showcase' },
+  { href: '/docs/', label: 'Docs' },
+];
+---
+
+<gdzig-site-header style="display: contents">
+  <header class:list={['container', 'site-header', { 'site-header-overlay': overlay }]}>
+    <nav class="site-nav" aria-label="Primary">
+      <ul class="brand-links">
+        <li><a class="wordmark" href="/" aria-label="GDZig home">GDZig</a></li>
+      </ul>
+      <ul class="primary-links">
+        {primaryLinks.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      </ul>
+      <ul class="utility-links">
+        <li><a href={repositoryUrl}>GitHub</a></li>
+        <li><a href={discordUrl}>Discord</a></li>
+        <li>
+          <button
+            id="theme-toggle"
+            class="theme-toggle secondary outline"
+            type="button"
+            aria-label="Switch color theme"
+            title="Switch color theme"
+          ></button>
+        </li>
+      </ul>
+      <details class="mobile-nav">
+        <summary>Menu</summary>
+        <ul>
+          {primaryLinks.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+          <li><a href={repositoryUrl}>GitHub</a></li>
+          <li><a href={discordUrl}>Discord</a></li>
+        </ul>
+      </details>
+    </nav>
+  </header>
+</gdzig-site-header>
+
+<script>
+  import { initializeTheme } from './theme.js';
+
+  class SiteHeader extends HTMLElement {
+    private cleanup?: () => void;
+
+    connectedCallback() {
+      this.cleanup?.();
+      const toggle = this.querySelector<HTMLButtonElement>('#theme-toggle');
+      const { toggleTheme, handleSystemChange, systemTheme } = initializeTheme(toggle);
+      toggle?.addEventListener('click', toggleTheme);
+      systemTheme.addEventListener('change', handleSystemChange);
+      this.cleanup = () => {
+        toggle?.removeEventListener('click', toggleTheme);
+        systemTheme.removeEventListener('change', handleSystemChange);
+      };
+    }
+
+    disconnectedCallback() {
+      this.cleanup?.();
+      this.cleanup = undefined;
+    }
+  }
+
+  if (!customElements.get('gdzig-site-header')) {
+    customElements.define('gdzig-site-header', SiteHeader);
+  }
+</script>

@@ -11,7 +11,11 @@
     "test:browser:copy": "bun run test/browser/blog-copy.ts",
     "build": "bun run scripts/build.ts",
     "build:astro": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "storybook": "storybook dev --host 127.0.0.1 --port 6006 --no-open --disable-telemetry",
+    "build-storybook": "storybook build --disable-telemetry",
+    "test:bdd:generate": "bddgen --config playwright.config.ts",
+    "test:bdd": "bun run test:bdd:generate && playwright test --config playwright.config.ts"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.2",
@@ -22,5 +26,12 @@
     "satori": "0.26.0",
     "sharp": "^0.35.3",
     "simple-icons": "^16.32.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@storybook-astro/framework": "1.14.0",
+    "@storybook/builder-vite": "10.6.5",
+    "playwright-bdd": "9.2.1",
+    "storybook": "10.6.5"
   }
 }

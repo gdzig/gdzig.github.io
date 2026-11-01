@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import ActionLink from '../components/marketing/ActionLink.astro';
 
 const godotVersion = '4.7.2';
 const zigVersion = '0.17.0';
@@ -47,8 +48,8 @@ const docSections = [
         <span>Rapid development</span>
       </p>
       <div class="hero-actions" aria-label="Primary actions">
-        <a href="/docs/" role="button">Read the docs</a>
-        <a href="#learn-more" role="button" class="outline">Learn more</a>
+        <ActionLink href="/docs/">Read the docs</ActionLink>
+        <ActionLink href="#learn-more" variant="outline">Learn more</ActionLink>
       </div>
     </div>
   </section>

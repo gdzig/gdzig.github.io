@@ -1,0 +1,10 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'outline';
+}
+
+const { href, variant = 'primary' } = Astro.props;
+---
+
+<a href={href} role="button" class={variant === 'outline' ? 'outline' : undefined}><slot /></a>
