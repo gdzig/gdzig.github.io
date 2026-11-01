@@ -26,6 +26,7 @@
 }
 
 .pico .blog-post h1 {
+  margin: 0 0 1rem;
   font-size: clamp(2rem, 5vw, 3.5rem);
   line-height: 1.12;
   overflow-wrap: anywhere;
@@ -60,17 +61,46 @@
 }
 
 .pico .blog-prose h2 {
-  margin-top: 2.5rem;
+  margin: 2rem 0 1rem;
 }
 
 .pico .blog-prose h3 {
-  margin-top: 2rem;
+  margin: 1.5rem 0 .75rem;
+}
+
+.pico .blog-prose p,
+.pico .blog-prose ul,
+.pico .blog-prose ol,
+.pico .blog-prose dl {
+  margin: 0 0 1rem;
+}
+
+.pico .blog-prose li {
+  margin-bottom: .5rem;
+}
+
+.pico .blog-prose li > ul,
+.pico .blog-prose li > ol {
+  margin: .5rem 0 0;
+}
+
+.pico .blog-prose li:last-child,
+.pico .blog-prose li > :last-child {
+  margin-bottom: 0;
 }
 
 .pico .blog-prose pre {
+  margin: 1.5rem 0;
+  border-radius: .5rem;
   max-width: 100%;
   overflow-x: auto;
   white-space: pre;
+}
+
+.pico .blog-prose :not(pre) > code {
+  padding: .125rem .25rem;
+  border-radius: .25rem;
+  font-size: .9em;
 }
 
 .pico .blog-prose table {
@@ -88,8 +118,24 @@
 }
 
 .pico .blog-prose blockquote {
-  border-color: var(--gdzig-accent-background);
+  margin: 1.5rem 0;
+  padding: .25rem 0 .25rem 1.5rem;
+  border-inline-start: 3px solid var(--gdzig-accent-background);
   font-style: normal;
+}
+
+.pico .blog-prose > :first-child,
+.pico .blog-prose blockquote > :first-child {
+  margin-top: 0;
+}
+
+.pico .blog-prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.pico .blog-prose img {
+  margin: 1.5rem auto;
+  border-radius: .5rem;
 }
 
 .pico .blog-list {
