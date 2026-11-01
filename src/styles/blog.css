@@ -103,6 +103,61 @@
   font-size: .9em;
 }
 
+/* Keep Pico's general button rules and Starlight-only colors out of this control.
+   Retain Expressive Code's native icon mask, clipboard handler and live feedback. */
+.pico .blog-post .blog-prose .expressive-code .frame .copy button {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  color: var(--gdzig-text);
+  background: var(--gdzig-surface);
+  border: 1px solid var(--gdzig-border);
+  border-radius: .3rem;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button > div {
+  display: none;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button::before {
+  border: 0;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button::after {
+  background-color: currentColor;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:hover,
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:focus-visible {
+  background: var(--gdzig-secondary-hover-background);
+  border-color: var(--gdzig-accent-background);
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:focus-visible {
+  outline: 2px solid var(--gdzig-accent-background);
+  outline-offset: 2px;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:active {
+  color: var(--gdzig-on-accent);
+  background: var(--gdzig-accent-background);
+}
+
+.pico .blog-prose .expressive-code .copy .feedback {
+  --tooltip-bg: var(--gdzig-accent-background);
+  color: var(--gdzig-on-accent);
+}
+
+@media (hover: hover) {
+  .pico .blog-post .blog-prose .expressive-code .frame .copy button {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
 .pico .blog-prose table {
   display: block;
   max-width: 100%;

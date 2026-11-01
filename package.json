@@ -8,6 +8,7 @@
     "dev": "astro dev",
     "test": "bun test",
     "test:browser:prose": "bun run test/browser/blog-prose.ts",
+    "test:browser:copy": "bun run test/browser/blog-copy.ts",
     "build": "bun run scripts/build.ts",
     "build:astro": "astro build",
     "preview": "astro preview"
