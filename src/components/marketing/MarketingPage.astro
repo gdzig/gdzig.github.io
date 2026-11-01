@@ -1,0 +1,14 @@
+---
+import '../../styles/marketing-page.css';
+
+interface Props {
+  background?: 'fade' | 'pattern';
+}
+
+const { background = 'fade' } = Astro.props;
+---
+
+<div class:list={['marketing-page', `marketing-page--${background}`]}>
+  <slot name="intro" />
+  <slot />
+</div>

@@ -1,0 +1,204 @@
+/* Shared marketing palette. Historical landing names remain compatible. */
+.pico.home-page {
+  --landing-dark: #0f0c08;
+  --landing-dark-2: #17120b;
+  --landing-on-dark: #f8efe3;
+  --landing-on-dark-muted: #b9ab97;
+  --landing-accent: #f6a31d;
+  --landing-band-light: #e7ddcc;
+  --landing-band-lighter: #f3ede2;
+  --landing-on-light: #17130b;
+  --landing-on-light-muted: #4f463a;
+  --landing-rule: #17130b;
+  --landing-panel-from: rgba(255, 255, 255, 0.85);
+  --landing-panel-to: rgba(255, 255, 255, 0);
+  --landing-accent-text: var(--landing-accent);
+  --landing-header-wordmark: #fff;
+  --landing-header-border: #fff;
+  --landing-toggle-border: rgba(248, 239, 227, 0.4);
+  --landing-menu-background: rgba(15, 12, 8, 0.85);
+  --landing-outline-border: rgba(248, 239, 227, 0.55);
+  --landing-outline-hover-text: #17130b;
+  --landing-hero-glow: rgba(246, 163, 29, 0.32);
+  --landing-hero-glow-secondary: rgba(176, 98, 8, 0.3);
+  --landing-grid: rgba(255, 255, 255, 0.025);
+  --landing-hero-from: #0a0805;
+  --landing-hero-to: #1a130a;
+  --landing-status-glow: rgba(246, 163, 29, 0.16);
+  --landing-footer-background: #000;
+  --landing-footer-text: #999;
+  --landing-footer-link: #ccc;
+  --landing-footer-link-hover: var(--landing-accent);
+  --marketing-canvas: var(--landing-band-lighter);
+  --marketing-reading-surface: var(--gdzig-background);
+  --marketing-title: var(--landing-on-dark);
+  --marketing-muted: var(--landing-on-dark-muted);
+  --marketing-rule: var(--landing-rule);
+  --marketing-hero-art:
+    radial-gradient(ellipse 60% 55% at 78% 18%, var(--landing-hero-glow), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 8% 95%, var(--landing-hero-glow-secondary), transparent 70%),
+    repeating-linear-gradient(
+      90deg,
+      var(--landing-grid) 0 1px,
+      transparent 1px 4.5rem
+    ),
+    linear-gradient(180deg, var(--landing-hero-from) 0%, var(--landing-hero-to) 100%);
+}
+
+/* The existing dark-band names identify section roles, not a fixed theme. */
+:root[data-theme='light'] .pico.home-page {
+  --landing-dark: #fff8ef;
+  --landing-dark-2: #f3ede2;
+  --landing-on-dark: #17130b;
+  --landing-on-dark-muted: #5f5547;
+  --landing-accent-text: #7a4b00;
+  --landing-header-wordmark: var(--landing-on-dark);
+  --landing-header-border: var(--landing-on-dark);
+  --landing-toggle-border: rgba(23, 19, 11, 0.4);
+  --landing-menu-background: rgba(255, 253, 248, 0.94);
+  --landing-outline-border: rgba(23, 19, 11, 0.55);
+  --landing-outline-hover-text: #fff8ef;
+  --landing-hero-glow: rgba(246, 163, 29, 0.16);
+  --landing-hero-glow-secondary: rgba(176, 98, 8, 0.09);
+  --landing-grid: rgba(23, 19, 11, 0.035);
+  --landing-hero-from: #fffdf8;
+  --landing-hero-to: #f4ead9;
+  --landing-status-glow: rgba(246, 163, 29, 0.12);
+  --landing-footer-background: #eadfce;
+  --landing-footer-text: #5f5547;
+  --landing-footer-link: #5f3900;
+  --landing-footer-link-hover: #3f2600;
+}
+
+:root[data-theme='dark'] .pico.home-page {
+  --landing-band-light: #231c13;
+  --landing-band-lighter: #1b150e;
+  --landing-on-light: #f8efe3;
+  --landing-on-light-muted: #cbbca8;
+  --landing-rule: #f6a31d;
+  --landing-panel-from: rgba(255, 255, 255, 0.07);
+  --landing-panel-to: rgba(255, 255, 255, 0);
+}
+
+/* Transparent header laid over the hero */
+.pico.home-page .site-header-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 5;
+  padding-block: 1.5rem;
+}
+
+.pico.home-page .site-header-overlay a:not(.wordmark),
+.pico.home-page .site-header-overlay .mobile-nav summary {
+  color: var(--landing-on-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.pico.home-page .site-header-overlay a:not(.wordmark):hover {
+  color: var(--landing-accent-text);
+}
+
+.pico.home-page .site-header-overlay .wordmark {
+  color: var(--landing-header-wordmark);
+  letter-spacing: 0.02em;
+}
+
+.pico.home-page .site-header-overlay .wordmark::before {
+  border-color: var(--landing-header-border);
+}
+
+.pico.home-page .site-header-overlay .theme-toggle {
+  color: var(--landing-on-dark);
+  border-color: var(--landing-toggle-border);
+  background: transparent;
+}
+
+.pico.home-page .site-header-overlay .mobile-nav {
+  padding: 0.6rem 0.9rem;
+  background: var(--landing-menu-background);
+  border-radius: 0.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.hero-actions [role='button'] {
+  width: auto;
+  margin: 0;
+  padding: 0.85rem 2.25rem;
+  color: #17130b;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--landing-accent);
+  border: 2px solid var(--landing-accent);
+  border-radius: 0.25rem;
+}
+
+.hero-actions [role='button']:hover {
+  background: #ffb743;
+  border-color: #ffb743;
+}
+
+.hero-actions [role='button'].outline {
+  color: var(--landing-on-dark);
+  background: transparent;
+  border-color: var(--landing-outline-border);
+}
+
+.hero-actions [role='button'].outline:hover {
+  color: var(--landing-outline-hover-text);
+  background: var(--landing-on-dark);
+  border-color: var(--landing-on-dark);
+}
+
+/* Footer */
+.landing-footer {
+  padding-block: 2rem;
+  color: var(--landing-footer-text);
+  background: var(--landing-footer-background);
+}
+
+.landing-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.landing-footer p {
+  margin: 0;
+  color: inherit;
+  font-size: 0.9rem;
+}
+
+.landing-footer nav {
+  width: auto;
+}
+
+.landing-footer ul {
+  flex-wrap: wrap;
+}
+
+.landing-footer a {
+  color: var(--landing-footer-link);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.landing-footer a:hover {
+  color: var(--landing-footer-link-hover);
+}

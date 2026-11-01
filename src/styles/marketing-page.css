@@ -1,0 +1,142 @@
+/* Marketing page composition. Decorative paint never enters the reading surface. */
+.pico[data-page='marketing'] main {
+  padding: 0;
+}
+
+.pico.home-page .marketing-page {
+  display: flow-root;
+  min-height: 100vh;
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+  color: var(--gdzig-text);
+  background-color: var(--marketing-canvas);
+}
+
+.pico.home-page .marketing-page--pattern {
+  background-image: var(--marketing-hero-art);
+}
+
+.pico .page-intro {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  padding-block: 9rem 4rem;
+  color: var(--marketing-title);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  text-align: left;
+}
+
+.marketing-page--fade > .page-intro {
+  background-image: var(--marketing-hero-art);
+}
+
+.marketing-page--fade > .page-intro::after {
+  position: absolute;
+  z-index: -1;
+  inset-inline: 0;
+  bottom: 0;
+  height: 5rem;
+  content: '';
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--marketing-canvas));
+}
+
+.page-intro-inner {
+  min-width: 0;
+}
+
+.pico .page-intro h1 {
+  max-width: 22ch;
+  margin: 0 0 1rem;
+  color: var(--marketing-title);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.pico .page-intro .eyebrow {
+  margin-bottom: 1rem;
+  color: var(--landing-accent-text);
+  letter-spacing: 0.2em;
+}
+
+.pico .page-intro p:not(.eyebrow),
+.pico .page-intro .blog-meta,
+.pico .page-intro .blog-tags {
+  color: var(--marketing-muted);
+}
+
+.pico .page-intro a {
+  color: var(--landing-accent-text);
+}
+
+.page-intro-inner > :last-child {
+  margin-bottom: 0;
+}
+
+.pico .page-intro--article h1 {
+  max-width: none;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-transform: none;
+}
+
+.reading-column {
+  box-sizing: border-box;
+  width: calc(100% - 2rem);
+  max-width: 65ch;
+  min-width: 0;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+
+.page-intro-inner.reading-column {
+  padding-inline: 0;
+}
+
+/* Panel knobs are CSS geometry, not article typography. Chrome grows outside 65ch. */
+.pico .reading-panel {
+  --reading-panel-inset: var(--reading-panel-padding, 1.5rem);
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(calc(100% - 2 * var(--reading-panel-gutter, 0.5rem)), calc(65ch + 2 * var(--reading-panel-inset)));
+  margin: calc(-1 * var(--reading-panel-overlap, 1.5rem)) auto 0;
+  padding-block: clamp(2rem, 4vw, 3rem);
+  color: var(--gdzig-text);
+  background: var(--marketing-reading-surface);
+  border: 0;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 0 1px var(--gdzig-border), 0 -0.5rem 1.5rem -1rem rgb(0 0 0 / 20%);
+}
+
+.reading-panel > .reading-column {
+  width: calc(100% - 2 * var(--reading-panel-inset));
+}
+
+@media (max-width: 576px) {
+  .pico .page-intro {
+    padding-block: 11rem 3rem;
+  }
+
+  .marketing-page--fade > .page-intro::after {
+    height: 3rem;
+  }
+
+  .pico .page-intro h1 {
+    letter-spacing: 0.05em;
+  }
+
+  .pico .page-intro--article h1 {
+    letter-spacing: -0.025em;
+  }
+
+  .pico .reading-panel {
+    --reading-panel-inset: 0.5rem;
+  }
+}

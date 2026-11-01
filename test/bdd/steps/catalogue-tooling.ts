@@ -7,7 +7,7 @@ import { externalDestination, requireExternalDirectory } from '../../helpers/bro
 import { storyIds } from './component-support';
 
 const { Then } = createBdd(test);
-Then('its index includes all eleven marketing story IDs', async ({ catalogue }) => {
+Then('its index includes every explicit marketing story ID', async ({ catalogue }) => {
   const response = await fetch(`${catalogue.origin}/index.json`, { signal: AbortSignal.timeout(5000) });
   expect(response.status).toBe(200);
   const index: any = await response.json();

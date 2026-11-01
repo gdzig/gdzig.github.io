@@ -1,6 +1,8 @@
 import '@picocss/pico/css/pico.conditional.min.css';
 import '../src/styles/home.css';
 import '../src/styles/landing.css';
+import '../src/styles/blog.css';
+import '../src/styles/marketing-page.css';
 import { initializeTheme } from '../src/components/marketing/theme.js';
 import type { Preview } from '@storybook-astro/framework';
 
@@ -33,7 +35,8 @@ export default {
         else if (selected === 'light' || selected === 'dark') localStorage.setItem('starlight-theme', selected);
       } catch { /* Production theme policy also supports unavailable storage. */ }
       document.body.classList.add('pico', 'home-page');
-      if (context.args.kind === 'action' || context.args.overlay) document.body.dataset.page = 'landing';
+      if (context.args.kind === 'page-composition') document.body.dataset.page = 'marketing';
+      else if (context.args.kind === 'action' || context.args.overlay) document.body.dataset.page = 'landing';
       else delete document.body.dataset.page;
       initializeTheme();
       return Story();

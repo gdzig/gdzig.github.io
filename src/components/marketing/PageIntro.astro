@@ -1,0 +1,21 @@
+---
+interface Props {
+  title: string;
+  id: string;
+  variant?: 'page' | 'article';
+  eyebrow?: string;
+  description?: string;
+}
+
+const { title, id, variant = 'page', eyebrow, description } = Astro.props;
+---
+
+<header class:list={['page-intro', `page-intro--${variant}`]}>
+  <div class:list={['container', 'page-intro-inner', { 'reading-column': variant === 'article' }]}>
+    <slot name="before-title" />
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1 id={id}>{title}</h1>
+    {description && <p>{description}</p>}
+    <slot />
+  </div>
+</header>
