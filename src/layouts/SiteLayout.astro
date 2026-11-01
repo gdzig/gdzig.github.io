@@ -1,5 +1,7 @@
 ---
 import PostHog from '../components/posthog.astro';
+import BlogHead from '../components/BlogHead.astro';
+import type { BlogHeadData } from '../lib/blog/metadata';
 import '@picocss/pico/css/pico.conditional.min.css';
 import '../styles/home.css';
 import '../styles/landing.css';
@@ -8,9 +10,10 @@ interface Props {
   title: string;
   description: string;
   variant?: 'default' | 'landing';
+  head?: BlogHeadData;
 }
 
-const { title, description, variant = 'default' } = Astro.props;
+const { title, description, variant = 'default', head } = Astro.props;
 const isLanding = variant === 'landing';
 
 const repositoryUrl = 'https://github.com/gdzig/gdzig';
@@ -34,6 +37,7 @@ const footerLinks = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {head && <BlogHead data={head} />}
     <PostHog />
     <script is:inline>
       (() => {

@@ -1,0 +1,13 @@
+---
+import { safeJsonLd, type BlogHeadData } from '../lib/blog/metadata';
+
+interface Props {
+  data: BlogHeadData;
+}
+
+const { data } = Astro.props;
+---
+
+<link rel="canonical" href={data.canonical} />
+{data.meta.map((attributes) => <meta {...attributes} />)}
+{data.jsonLd && <script type="application/ld+json" set:html={safeJsonLd(data.jsonLd)} />}
