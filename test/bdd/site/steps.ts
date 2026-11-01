@@ -34,6 +34,41 @@ Then('I arrive at the website path {string}', async ({ page, website }, path: st
   await expect(page).toHaveURL(`${website.origin}${path}`);
   await expect(page.locator('main')).toBeVisible();
 });
+Then('the marketing page shares the branded shell and {string} introduction', async ({ page }, title: string) => {
+  await expect(page.locator('body')).toHaveAttribute('data-page', 'marketing');
+  await expect(page.locator('.site-header-overlay')).toHaveCount(1);
+  await expect(page.locator('.page-intro h1')).toHaveText(title);
+  await expect(page.locator('.landing-footer')).toHaveCount(1);
+  const footer = page.getByRole('navigation', { name: 'Footer', exact: true });
+  expect(await footer.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual([
+    '/blog/', '/showcase/', '/docs/', 'https://github.com/gdzig/gdzig', 'https://discord.gg/GEUZGRGeDj',
+  ]);
+  const paint = await page.locator('.marketing-page').evaluate(node => getComputedStyle(node).backgroundImage);
+  expect(paint, 'persistent artwork is painted on the full marketing composition').toContain('repeating-linear-gradient');
+  await expect(page.locator('main')).toHaveCount(1);
+  await expect(page.locator('h1')).toHaveCount(1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+});
+Then('the blog reading surface is opaque and responsive', async ({ page }) => {
+  const geometry = await page.locator('.reading-panel').evaluate(panel => {
+    const box = panel.getBoundingClientRect(), style = getComputedStyle(panel);
+    const footer = document.querySelector('.landing-footer')!.getBoundingClientRect();
+    return { left: box.left, right: box.right, width: innerWidth, background: style.backgroundColor, image: style.backgroundImage,
+      radius: style.borderRadius, shadow: style.boxShadow, footerBottom: footer.bottom + scrollY, height: innerHeight };
+  });
+  expect(geometry.background).toMatch(/^rgb\(/);
+  expect(geometry.image).toBe('none');
+  if (geometry.width <= 576) {
+    expect(geometry.left).toBe(0);
+    expect(geometry.right).toBe(geometry.width);
+    expect(geometry.radius).toBe('0px');
+    expect(geometry.shadow).toBe('none');
+  } else {
+    expect(geometry.left).toBeGreaterThan(0);
+    expect(geometry.right).toBeLessThan(geometry.width);
+  }
+  expect(geometry.footerBottom, 'short pages keep the footer at the viewport bottom').toBeGreaterThanOrEqual(geometry.height);
+});
 Then('the page fits the viewport and has one main heading and landmark', async ({ page, website }) => {
   await expect(page.locator('main')).toHaveCount(1);
   await expect(page.locator('h1')).toHaveCount(1);

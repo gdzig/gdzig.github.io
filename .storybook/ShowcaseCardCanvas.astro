@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ShowcaseCard from '../src/components/marketing/ShowcaseCard.astro';
+import projects from '../src/content/showcase/projects.json';
+
+interface Props { variant?: 'vector-wave' | 'native-video' | 'minimal' | 'long' }
+const { variant = 'vector-wave' } = Astro.props;
+const longToken = 'FIXTURE_LONG_TEXT_'.repeat(12);
+const authored = projects.find(project => project.id === variant);
+// These explicit synthetic specimens are not authored community submissions.
+const synthetic: CollectionEntry<'showcase'>['data'] = {
+  id: 'fixture-project',
+  category: 'extensions',
+  title: variant === 'long' ? longToken : 'FIXTURE_MINIMAL_PROJECT',
+  summary: 'FIXTURE_SUMMARY: synthetic project, not a community submission.',
+  tags: variant === 'long' ? [longToken, 'FIXTURE_TAG'] : [],
+  details: variant === 'long' ? ['FIXTURE_DETAIL: synthetic project detail.'] : [],
+  primaryLink: { label: variant === 'long' ? longToken : 'FIXTURE_DESTINATION', url: 'https://example.invalid/fixture-project', icon: 'github' },
+};
+const project = authored ? { details: [], ...authored } as CollectionEntry<'showcase'>['data'] : synthetic;
+---
+
+<main class="container">
+  <div class="grid showcase-grid">
+    <ShowcaseCard project={project} />
+  </div>
+</main>
+
+<style>
+  .showcase-grid { grid-template-columns: minmax(0, 1fr); max-width: 44rem; margin-inline: auto; }
+</style>

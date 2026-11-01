@@ -6,8 +6,11 @@ Feature: Navigate the GDZig website
     When I visit the website home page
     And I follow the primary navigation link "Blog"
     Then I arrive at the website path "/blog/"
+    And the marketing page shares the branded shell and "Blog" introduction
+    And the blog reading surface is opaque and responsive
     When I follow the primary navigation link "Showcase"
     Then I arrive at the website path "/showcase/"
+    And the marketing page shares the branded shell and "Made with GDZig" introduction
     When I follow the primary navigation link "Docs"
     Then I arrive at the website path "/docs/"
     And the page fits the viewport and has one main heading and landmark

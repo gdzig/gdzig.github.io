@@ -1,11 +1,7 @@
 .pico .blog-index,
 .pico .blog-post {
-  max-width: 65ch;
-  margin: 2rem auto 4rem;
-}
-
-.pico .blog-index,
-.pico .blog-post {
+  max-width: none;
+  margin: 0;
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -17,19 +13,11 @@
   box-shadow: none;
 }
 
-.pico .blog-post > header,
-.pico .blog-post > footer {
+.pico .blog-source-footer {
   padding: 0;
   margin: 0;
   background: transparent;
   border: 0;
-}
-
-.pico .blog-post h1 {
-  margin: 0 0 1rem;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  line-height: 1.12;
-  overflow-wrap: anywhere;
 }
 
 .pico .blog-meta,
@@ -166,7 +154,7 @@
 }
 
 .pico .blog-prose img,
-.pico .blog-post > img {
+.pico .blog-cover {
   display: block;
   max-width: 100%;
   height: auto;

@@ -1,0 +1,46 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ShowcaseLink from '../ShowcaseLink.astro';
+import '../../styles/marketing-content.css';
+
+interface Props {
+  project: CollectionEntry<'showcase'>['data'];
+}
+
+const { project } = Astro.props;
+---
+
+<article class="marketing-showcase-card">
+  {project.image && (
+    <img src={project.image.src} alt={project.image.alt} class="showcase-image" />
+  )}
+  {project.tags.length > 0 && (
+    <ul class="showcase-tags" aria-label={`${project.title} tags`}>
+      {project.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  )}
+  <div class="showcase-card-heading">
+    <h3><a href={project.primaryLink.url}>{project.title}</a></h3>
+    {project.author && <span class="showcase-author">{project.author}</span>}
+  </div>
+  <p>{project.summary}</p>
+  {project.note && <small class="showcase-note">{project.note}</small>}
+  {project.details.map((detail) => <p>{detail}</p>)}
+  <div class="actions" aria-label={`${project.title} links`}>
+    <ShowcaseLink
+      href={project.primaryLink.url}
+      label={project.primaryLink.label}
+      icon={project.primaryLink.icon}
+      accessibleLabel={`Open ${project.title} on ${project.primaryLink.label}`}
+    />
+    {project.sourceLink && (
+      <ShowcaseLink
+        href={project.sourceLink.url}
+        label={project.sourceLink.label}
+        icon={project.sourceLink.icon}
+        accessibleLabel={`Open ${project.title} source on GitHub`}
+        variant="secondary"
+      />
+    )}
+  </div>
+</article>

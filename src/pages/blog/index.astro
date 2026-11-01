@@ -1,8 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import MarketingPage from '../../components/marketing/MarketingPage.astro';
+import PageIntro from '../../components/marketing/PageIntro.astro';
+import ReadingPanel from '../../components/marketing/ReadingPanel.astro';
+import PostSummary from '../../components/marketing/PostSummary.astro';
 import { indexMetadata } from '../../lib/blog/metadata';
 import { getBlogPosts, publicationContext } from '../../lib/blog/posts';
-import { formatDate, isPublished, postPath } from '../../lib/blog/policy';
 import '../../styles/blog.css';
 
 if (!Astro.site) throw new Error('Blog pages require a configured Astro.site.');
@@ -13,25 +16,21 @@ const repositoryUrl = 'https://github.com/gdzig/gdzig';
 ---
 
 <SiteLayout title={head.title} description={head.description} head={head}>
-  <section class="blog-index" aria-labelledby="blog-title">
-    <h1 id="blog-title">Blog</h1>
-    {posts.length === 0 ? (
-      <>
-        <p>No posts published yet.</p>
-        <p><a href={repositoryUrl}>Follow the repository</a> for current changes.</p>
-      </>
-    ) : (
-      <ol class="blog-list">
-        {posts.map(post => (
-          <li>
-            {!isPublished(post, context.now) && <p class="blog-preview">Unpublished preview</p>}
-            {post.data.publishedAt && <p class="blog-meta"><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time></p>}
-            <h2><a href={postPath(post.id)}>{post.data.title}</a></h2>
-            <p>{post.data.description}</p>
-            <p class="blog-meta">By {post.data.author.url ? <a href={post.data.author.url} rel="author">{post.data.author.name}</a> : post.data.author.name}</p>
-          </li>
-        ))}
-      </ol>
-    )}
-  </section>
+  <MarketingPage background="pattern">
+    <PageIntro slot="intro" id="blog-title" title="Blog" />
+    <ReadingPanel>
+      <section class="blog-index" aria-labelledby="blog-title">
+        {posts.length === 0 ? (
+          <>
+            <p>No posts published yet.</p>
+            <p><a href={repositoryUrl}>Follow the repository</a> for current changes.</p>
+          </>
+        ) : (
+          <ol class="blog-list">
+            {posts.map(post => <PostSummary post={post} now={context.now} />)}
+          </ol>
+        )}
+      </section>
+    </ReadingPanel>
+  </MarketingPage>
 </SiteLayout>

@@ -8,6 +8,9 @@ export const storyIds = [
   ...['page-light', 'page-dark', 'article-light', 'article-dark', 'long-article'].map(id => `marketing-pageintro--${id}`),
   ...['default-light', 'default-dark', 'pattern-light', 'pattern-dark', 'roomy', 'compact'].map(id => `marketing-readingpanel--${id}`),
   ...['fade-light', 'fade-dark', 'pattern-light', 'pattern-dark', 'article-fade-light', 'article-fade-dark', 'article-pattern-light', 'article-pattern-dark', 'empty-fade', 'empty-pattern', 'long-article-title', 'roomy-panel', 'compact-panel'].map(id => `marketing-marketingpage--${id}`),
+  ...['games-light', 'games-dark', 'long-light', 'long-dark'].map(id => `marketing-sectionheading--${id}`),
+  ...['vector-wave-light', 'vector-wave-dark', 'native-video-light', 'native-video-dark', 'minimal-light', 'minimal-dark', 'long-light', 'long-dark'].map(id => `marketing-showcasecard--${id}`),
+  ...['published-light', 'published-dark', 'draft-light', 'draft-dark', 'scheduled-light', 'scheduled-dark', 'no-author-url-light', 'no-author-url-dark', 'long-title-light', 'long-title-dark', 'no-date-light', 'no-date-dark'].map(id => `marketing-postsummary--${id}`),
 ];
 export async function themeIs(page: Page | Frame, theme: string) {
   await expect(page.locator('html')).toHaveAttribute('data-theme', theme);

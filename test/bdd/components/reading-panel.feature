@@ -13,5 +13,9 @@ Feature: Reading panel
       | article-pattern-dark | 1447 | dark |
       | article-fade-light | 390 | light |
       | article-pattern-dark | 390 | dark |
+      | article-fade-light | 576 | light |
+      | article-pattern-dark | 576 | dark |
+      | article-fade-light | 768 | light |
+      | article-pattern-dark | 768 | dark |
       | roomy-panel | 1447 | light |
       | compact-panel | 390 | light |

@@ -25,14 +25,21 @@ Then('the reading surface is opaque and fits the viewport', async ({ page, audit
   const metrics = await page.locator('.reading-panel').evaluate(panel => {
     const box = panel.getBoundingClientRect();
     const css = getComputedStyle(panel);
-    return { background: css.backgroundColor, image: css.backgroundImage, left: box.left, right: box.right,
+    return { background: css.backgroundColor, image: css.backgroundImage, radius: css.borderRadius, shadow: css.boxShadow, left: box.left, right: box.right,
       viewport: innerWidth, documentWidth: document.documentElement.scrollWidth };
   });
   audit.measurements.push(metrics);
   expect(metrics.background).toMatch(/^rgb\(/);
   expect(metrics.image).toBe('none');
-  expect(metrics.left).toBeGreaterThanOrEqual(7);
-  expect(metrics.right).toBeLessThanOrEqual(metrics.viewport - 7);
+  if (metrics.viewport <= 576) {
+    expect(metrics.left, 'mobile reading surface starts at the screen edge').toBe(0);
+    expect(metrics.right, 'mobile reading surface reaches the screen edge').toBe(metrics.viewport);
+    expect(metrics.radius).toBe('0px');
+    expect(metrics.shadow).toBe('none');
+  } else {
+    expect(metrics.left).toBeGreaterThanOrEqual(7);
+    expect(metrics.right).toBeLessThanOrEqual(metrics.viewport - 7);
+  }
   expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewport + 1);
   await page.screenshot({ path: externalDestination(join(catalogue.output, `${audit.story}-${audit.width}.png`)), fullPage: true });
 });
@@ -58,11 +65,17 @@ Then('the reading column uses the available width up to 65 characters', async ({
     const cap = probe.getBoundingClientRect().width;
     probe.remove();
     const box = column.getBoundingClientRect();
-    return { width: box.width, expected: Math.min(cap, innerWidth - 2 * parseFloat(getComputedStyle(document.documentElement).fontSize)), left: box.left, right: innerWidth - box.right };
+    const introduction = document.querySelector('.page-intro--article .reading-column')?.getBoundingClientRect();
+    return { width: box.width, expected: Math.min(cap, innerWidth - 2 * parseFloat(getComputedStyle(document.documentElement).fontSize)), left: box.left, right: innerWidth - box.right,
+      introduction: introduction ? { left: introduction.left, width: introduction.width } : null };
   });
   audit.measurements.push(metrics);
   expect(Math.abs(metrics.width - metrics.expected)).toBeLessThanOrEqual(1);
   expect(Math.abs(metrics.left - metrics.right)).toBeLessThanOrEqual(1);
+  if (metrics.introduction) {
+    expect(Math.abs(metrics.introduction.left - metrics.left), 'article introduction and prose share the same left edge').toBeLessThanOrEqual(1);
+    expect(Math.abs(metrics.introduction.width - metrics.width), 'article introduction retains the same reading measure').toBeLessThanOrEqual(1);
+  }
 });
 
 Then('the introduction title uses {string} treatment without overflow', async ({ page, audit }, treatment: string) => {

@@ -67,6 +67,16 @@ function measureProse(variants: readonly string[]): Check[] {
   const rem = px(document.documentElement, 'font-size');
   const prose = element('.blog-prose');
   const article = element('.blog-post');
+  const composition = document.querySelector('.marketing-page');
+  check('article has persistent branded backdrop', !!composition && css(composition).backgroundImage.includes('repeating-linear-gradient'), composition && css(composition).backgroundImage, 'persistent grid and gradient');
+  const panel = article.querySelector('.reading-panel');
+  check('article prose is inside an opaque reading surface', !!panel && panel.contains(prose) && /^rgb\(/.test(css(panel).backgroundColor) && css(panel).backgroundImage === 'none', panel && css(panel).backgroundColor, 'opaque panel without artwork');
+  if (panel && innerWidth <= 576) {
+    near('mobile surface reaches left screen edge', rect(panel).left, 0);
+    near('mobile surface reaches right screen edge', rect(panel).right, innerWidth);
+    near('mobile surface has no rounded chrome', px(panel, 'border-top-left-radius'), 0);
+    check('mobile surface has no panel shadow', css(panel).boxShadow === 'none', css(panel).boxShadow, 'none');
+  }
   const quotes = [...prose.querySelectorAll<HTMLElement>(':scope > blockquote')];
   check('fixture quote variants', quotes.length === variants.length, quotes.length, variants.length);
   const inspectQuote = (quote: HTMLElement, label: string) => {
@@ -96,6 +106,7 @@ function measureProse(variants: readonly string[]): Check[] {
     if (item.lastElementChild) near(`final list item ${index}: final child no trailing margin`, px(item.lastElementChild, 'margin-bottom'), 0);
   }
   const h1 = element('.blog-post > header h1');
+  near('article title aligns with reading column', rect(h1).left, rect(prose).left);
   near('header h1 top margin', px(h1, 'margin-top'), 0);
   near('header h1 bottom margin', px(h1, 'margin-bottom'), rem);
   const titleGap = rect(h1.nextElementSibling!).top - rect(h1).bottom;
@@ -170,14 +181,14 @@ function measureProse(variants: readonly string[]): Check[] {
   // Measure 65ch using the actual article font, rather than assuming ch equals half an em.
   const probe = document.createElement('span');
   probe.style.cssText = 'position:absolute;width:65ch;visibility:hidden';
-  article.append(probe);
+  prose.append(probe);
   const readingLimit = rect(probe).width;
   probe.remove();
-  check('reading width bounded by 65ch', rect(article).width <= readingLimit + 1, rect(article).width, `<= ${readingLimit + 1}`);
+  check('reading width bounded by 65ch', rect(prose).width <= readingLimit + 1, rect(prose).width, `<= ${readingLimit + 1}`);
   const main = element('main');
-  const available = main.clientWidth - px(main, 'padding-left') - px(main, 'padding-right');
-  near('reading width uses available space up to cap', rect(article).width, Math.min(available, readingLimit));
-  near('reading column centered', rect(article).left - rect(main).left, rect(main).right - rect(article).right);
+  const available = innerWidth - 2 * rem;
+  near('reading width uses available space up to cap', rect(prose).width, Math.min(available, readingLimit));
+  near('reading column centered', rect(prose).left - rect(main).left, rect(main).right - rect(prose).right);
   return checks;
 }
 

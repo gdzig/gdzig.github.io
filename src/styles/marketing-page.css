@@ -1,6 +1,19 @@
 /* Marketing page composition. Decorative paint never enters the reading surface. */
 .pico[data-page='marketing'] main {
   padding: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.pico[data-page='marketing'] {
+  display: flex;
+  flex-direction: column;
+}
+
+.pico[data-page='marketing'] main > .marketing-page {
+  min-height: 0;
+  flex: 1;
 }
 
 .pico.home-page .marketing-page {
@@ -15,11 +28,20 @@
   background-image: var(--marketing-hero-art);
 }
 
+.marketing-sections > section + section {
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+.marketing-sections .showcase-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+}
+
 .pico .page-intro {
   position: relative;
   isolation: isolate;
   margin: 0;
   padding-block: 9rem 4rem;
+  padding-inline: 0;
   color: var(--marketing-title);
   background: transparent;
   border: 0;
@@ -101,7 +123,7 @@
 
 /* Panel knobs are CSS geometry, not article typography. Chrome grows outside 65ch. */
 .pico .reading-panel {
-  --reading-panel-inset: var(--reading-panel-padding, 1.5rem);
+  --reading-panel-inset: clamp(0.5rem, calc((100vw - 65ch - 1rem) / 2), var(--reading-panel-padding, 1.5rem));
   position: relative;
   z-index: 1;
   box-sizing: border-box;
@@ -137,6 +159,10 @@
   }
 
   .pico .reading-panel {
-    --reading-panel-inset: 0.5rem;
+    --reading-panel-inset: 1rem;
+    width: 100%;
+    margin-inline: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 }

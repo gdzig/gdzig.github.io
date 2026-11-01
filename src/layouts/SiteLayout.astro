@@ -2,11 +2,13 @@
 import PostHog from '../components/posthog.astro';
 import BlogHead from '../components/BlogHead.astro';
 import SiteHeader from '../components/marketing/SiteHeader.astro';
+import SiteFooter from '../components/marketing/SiteFooter.astro';
 import { initializeTheme } from '../components/marketing/theme.js';
 import type { BlogHeadData } from '../lib/blog/metadata';
 import '@picocss/pico/css/pico.conditional.min.css';
 import '../styles/home.css';
 import '../styles/landing.css';
+import '../styles/marketing-page.css';
 
 interface Props {
   title: string;
@@ -17,21 +19,6 @@ interface Props {
 
 const { title, description, variant = 'default', head } = Astro.props;
 const isLanding = variant === 'landing';
-
-const repositoryUrl = 'https://github.com/gdzig/gdzig';
-const discordUrl = 'https://discord.gg/GEUZGRGeDj';
-
-const primaryLinks = [
-  { href: '/blog/', label: 'Blog' },
-  { href: '/showcase/', label: 'Showcase' },
-  { href: '/docs/', label: 'Docs' },
-];
-
-const footerLinks = [
-  ...primaryLinks,
-  { href: repositoryUrl, label: 'GitHub' },
-  { href: discordUrl, label: 'Discord' },
-];
 ---
 
 <html lang="en">
@@ -45,44 +32,14 @@ const footerLinks = [
 
     <title>{title}</title>
   </head>
-  <body class="pico home-page" data-page={isLanding ? 'landing' : undefined}>
+  <body class="pico home-page" data-page={isLanding ? 'landing' : 'marketing'}>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <SiteHeader overlay={isLanding} />
+    <SiteHeader overlay />
 
-    <main id="main-content" class={isLanding ? undefined : 'container'}>
+    <main id="main-content">
       <slot />
     </main>
 
-    {
-      isLanding ? (
-        <footer class="landing-footer">
-          <div class="container landing-footer-inner">
-            <p>Build Godot games and extensions with Zig.</p>
-            <nav aria-label="Footer">
-              <ul>
-                {footerLinks.map((link) => (
-                  <li>
-                    <a href={link.href}>{link.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </footer>
-      ) : (
-        <footer class="container site-footer">
-          <p>Build Godot games and extensions with Zig.</p>
-          <nav aria-label="Footer">
-            <ul>
-              {footerLinks.map((link) => (
-                <li>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </footer>
-      )
-    }
+    <SiteFooter />
   </body>
 </html>
