@@ -221,7 +221,7 @@ async function main() {
         const styles: string[] = await page.locator('link[rel="stylesheet"]').evaluateAll((nodes: HTMLLinkElement[]) => nodes.map(node => node.href));
         await page.goto(server.origin, { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
-        const snapshot = () => page.evaluate(() => ['.site-header', '.site-nav', '#theme-toggle', '.hero h1', '.actions a', '.site-footer'].map(selector => {
+        const snapshot = () => page.evaluate(() => ['.site-header', '.site-nav', '#theme-toggle', '#hero-title', '.hero-actions a', '.landing-footer'].map(selector => {
           const node = document.querySelector(selector);
           if (!node) throw new Error(`Missing marketing control ${selector}`);
           const s = getComputedStyle(node), r = node.getBoundingClientRect();

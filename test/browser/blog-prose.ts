@@ -214,7 +214,7 @@ async function main() {
         await page.goto(server.origin, { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
         const snapshot = () => page.evaluate(() => {
-          const selectors = ['.site-header', '.site-nav', '#theme-toggle', '.hero h1', '.hero p', '.actions a', '.section-heading h2', '.site-footer'];
+          const selectors = ['.site-header', '.site-nav', '#theme-toggle', '#hero-title', '.hero-kicker', '.hero-actions a', '.band-heading h2', '.landing-footer'];
           const properties = ['font-family', 'font-size', 'font-weight', 'line-height', 'color', 'background-color', 'margin-top', 'margin-bottom', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'border-left-width', 'border-radius', 'white-space'];
           return selectors.map(selector => {
             const node = document.querySelector(selector);
