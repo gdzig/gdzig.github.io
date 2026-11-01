@@ -1,0 +1,44 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SiteLayout from './SiteLayout.astro';
+import { postMetadata } from '../lib/blog/metadata';
+import { publicationContext } from '../lib/blog/posts';
+import { formatDate, isPublished } from '../lib/blog/policy';
+import '../styles/blog.css';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+if (!Astro.site) throw new Error('Blog pages require a configured Astro.site.');
+const context = publicationContext();
+const head = postMetadata(post, Astro.site, context);
+const { title, author, publishedAt, updatedAt, tags, cover, source } = post.data;
+---
+
+<SiteLayout title={head.title} description={head.description} head={head}>
+  <article class="blog-post">
+    <header>
+      {!isPublished(post, context.now) && <p class="blog-preview">Unpublished preview</p>}
+      {publishedAt && <p class="blog-meta"><time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time></p>}
+      <h1>{title}</h1>
+      <p class="blog-meta">
+        By {author.url ? <a href={author.url} rel="author">{author.name}</a> : author.name}
+      </p>
+      {updatedAt && <p class="blog-meta">Updated <time datetime={updatedAt.toISOString()}>{formatDate(updatedAt)}</time></p>}
+      {tags.length > 0 && <ul class="blog-tags" aria-label="Tags">{tags.map(tag => <li>{tag}</li>)}</ul>}
+    </header>
+    {cover && <img src={cover.src} alt={cover.alt} loading="eager" />}
+    <hr />
+    <div class="blog-prose"><slot /></div>
+    {source && (
+      <footer>
+        <hr />
+        <p>Original source: <a href={source.url}>{source.url}</a></p>
+        {source.publishedAt && <p class="blog-meta">Originally published <time datetime={source.publishedAt.toISOString()}>{formatDate(source.publishedAt)}</time></p>}
+        {publishedAt && <p class="blog-meta">Published on GDZig <time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time></p>}
+      </footer>
+    )}
+  </article>
+</SiteLayout>

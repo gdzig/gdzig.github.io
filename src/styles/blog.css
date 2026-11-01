@@ -1,0 +1,110 @@
+.pico .blog-index,
+.pico .blog-post {
+  max-width: 65ch;
+  margin: 2rem auto 4rem;
+}
+
+.pico .blog-index,
+.pico .blog-post {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pico .blog-post {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.pico .blog-post > header,
+.pico .blog-post > footer {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+}
+
+.pico .blog-post h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.pico .blog-meta,
+.pico .blog-tags {
+  color: var(--gdzig-muted);
+  font-size: .9rem;
+}
+
+.pico .blog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.pico .blog-tags > li {
+  list-style: none;
+}
+
+.pico .blog-post hr {
+  margin-block: 2rem;
+  border-color: var(--gdzig-border);
+}
+
+.pico .blog-prose {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.pico .blog-prose h2 {
+  margin-top: 2.5rem;
+}
+
+.pico .blog-prose h3 {
+  margin-top: 2rem;
+}
+
+.pico .blog-prose pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.pico .blog-prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.pico .blog-prose img,
+.pico .blog-post > img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.pico .blog-prose blockquote {
+  border-color: var(--gdzig-accent-background);
+  font-style: normal;
+}
+
+.pico .blog-list {
+  list-style: none;
+  padding: 0;
+}
+
+.pico .blog-list > li {
+  list-style: none;
+  margin-block: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--gdzig-border);
+}
+
+.pico .blog-preview {
+  color: var(--gdzig-text);
+  border-left: 3px solid var(--gdzig-accent-background);
+  padding-left: .75rem;
+}

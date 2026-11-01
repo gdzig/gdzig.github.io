@@ -187,11 +187,13 @@ describe('static site artifact', () => {
     }
   }, 180_000);
 
-  test('contains the Blog placeholder page', async () => {
+  test('contains the empty collection-backed Blog page', async () => {
     const html = await readFile(join(outputDirectory, 'blog', 'index.html'), 'utf8');
 
-    expect(html).toContain('Blog — Planned');
-    expect(html).toContain('Release notes and project updates will live here.');
+    expect(html).toContain('<title>Blog | GDZig</title>');
+    expect(html).toContain('No posts published yet.');
+    expect(html).toContain('rel="canonical" href="https://gdzig.github.io/blog/"');
+    expect(html).toContain('property="og:image" content="https://gdzig.github.io/og/blog.png"');
     expect(html).toContain('Follow the repository');
     expect(html).toContain('href="https://github.com/gdzig/gdzig"');
     expectTopLevelNavigation(html);
