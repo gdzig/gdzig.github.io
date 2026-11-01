@@ -142,12 +142,28 @@
 }
 
 @media (max-width: 576px) {
+  .pico.home-page .marketing-page {
+    background-color: var(--marketing-reading-surface);
+    background-image: none;
+  }
+
   .pico .page-intro {
     padding-block: 11rem 3rem;
   }
 
-  .marketing-page--fade > .page-intro::after {
+  .marketing-page .page-intro {
+    background-image: var(--marketing-hero-art);
+  }
+
+  .marketing-page .page-intro::after {
+    position: absolute;
+    z-index: -1;
+    inset-inline: 0;
+    bottom: 0;
     height: 3rem;
+    content: '';
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--marketing-reading-surface));
   }
 
   .pico .page-intro h1 {
@@ -161,7 +177,8 @@
   .pico .reading-panel {
     --reading-panel-inset: 1rem;
     width: 100%;
-    margin-inline: 0;
+    margin: 0;
+    background: transparent;
     border-radius: 0;
     box-shadow: none;
   }

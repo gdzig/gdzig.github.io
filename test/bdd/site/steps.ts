@@ -43,27 +43,45 @@ Then('the marketing page shares the branded shell and {string} introduction', as
   expect(await footer.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual([
     '/blog/', '/showcase/', '/docs/', 'https://github.com/gdzig/gdzig', 'https://discord.gg/GEUZGRGeDj',
   ]);
-  const paint = await page.locator('.marketing-page').evaluate(node => getComputedStyle(node).backgroundImage);
-  expect(paint, 'persistent artwork is painted on the full marketing composition').toContain('repeating-linear-gradient');
+  const paint = await page.locator('.marketing-page').evaluate(node => {
+    const intro = node.querySelector('.page-intro')!;
+    const canvas = getComputedStyle(node), header = getComputedStyle(intro), fade = getComputedStyle(intro, '::after');
+    return { width: innerWidth, image: canvas.backgroundImage, color: canvas.backgroundColor, introImage: header.backgroundImage, fade: fade.backgroundImage, fadeContent: fade.content };
+  });
+  if (paint.width <= 576) {
+    expect(paint.image, 'mobile artwork stops at the introduction').toBe('none');
+    expect(paint.color, 'mobile content rests on an opaque canvas').toMatch(/^rgb\(/);
+    expect(paint.introImage).toContain('repeating-linear-gradient');
+    expect(paint.fadeContent).not.toBe('none');
+    expect(paint.fade).toContain('linear-gradient');
+    expect(paint.fade, 'mobile fade ends at the content canvas color').toContain(paint.color);
+  } else {
+    expect(paint.image, 'desktop retains artwork on the full marketing composition').toContain('repeating-linear-gradient');
+  }
   await expect(page.locator('main')).toHaveCount(1);
   await expect(page.locator('h1')).toHaveCount(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });
-Then('the blog reading surface is opaque and responsive', async ({ page }) => {
+Then('the blog reading surface follows its responsive treatment', async ({ page }) => {
   const geometry = await page.locator('.reading-panel').evaluate(panel => {
     const box = panel.getBoundingClientRect(), style = getComputedStyle(panel);
     const footer = document.querySelector('.landing-footer')!.getBoundingClientRect();
-    return { left: box.left, right: box.right, width: innerWidth, background: style.backgroundColor, image: style.backgroundImage,
+    const intro = document.querySelector('.page-intro')!.getBoundingClientRect();
+    return { left: box.left, right: box.right, top: box.top, introBottom: intro.bottom, width: innerWidth, background: style.backgroundColor, image: style.backgroundImage,
       radius: style.borderRadius, shadow: style.boxShadow, footerBottom: footer.bottom + scrollY, height: innerHeight };
   });
-  expect(geometry.background).toMatch(/^rgb\(/);
   expect(geometry.image).toBe('none');
   if (geometry.width <= 576) {
+    expect(geometry.background, 'mobile reading content has no separate panel paint').toBe('rgba(0, 0, 0, 0)');
+    expect(Math.abs(geometry.top - geometry.introBottom), 'mobile surface does not overlap the fade').toBeLessThanOrEqual(1);
     expect(geometry.left).toBe(0);
     expect(geometry.right).toBe(geometry.width);
     expect(geometry.radius).toBe('0px');
     expect(geometry.shadow).toBe('none');
   } else {
+    expect(geometry.background).toMatch(/^rgb\(/);
+    expect(geometry.top, 'desktop panel still overlaps the introduction').toBeLessThan(geometry.introBottom - 1);
+    expect(geometry.shadow).not.toBe('none');
     expect(geometry.left).toBeGreaterThan(0);
     expect(geometry.right).toBeLessThan(geometry.width);
   }

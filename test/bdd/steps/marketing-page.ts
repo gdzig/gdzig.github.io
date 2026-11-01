@@ -21,22 +21,27 @@ Given('the marketing page story {string} at {int} pixels in {string}', async ({ 
   await page.evaluate(() => document.fonts.ready);
 });
 
-Then('the reading surface is opaque and fits the viewport', async ({ page, audit, catalogue }) => {
+Then('the responsive reading surface fits the viewport', async ({ page, audit, catalogue }) => {
   const metrics = await page.locator('.reading-panel').evaluate(panel => {
     const box = panel.getBoundingClientRect();
     const css = getComputedStyle(panel);
-    return { background: css.backgroundColor, image: css.backgroundImage, radius: css.borderRadius, shadow: css.boxShadow, left: box.left, right: box.right,
+    return { background: css.backgroundColor, image: css.backgroundImage, radius: css.borderRadius, shadow: css.boxShadow, border: css.borderWidth, marginTop: css.marginTop, left: box.left, right: box.right,
       viewport: innerWidth, documentWidth: document.documentElement.scrollWidth };
   });
   audit.measurements.push(metrics);
-  expect(metrics.background).toMatch(/^rgb\(/);
   expect(metrics.image).toBe('none');
   if (metrics.viewport <= 576) {
+    expect(metrics.background).toBe('rgba(0, 0, 0, 0)');
+    expect(metrics.marginTop).toBe('0px');
+    expect(metrics.border).toBe('0px');
     expect(metrics.left, 'mobile reading surface starts at the screen edge').toBe(0);
     expect(metrics.right, 'mobile reading surface reaches the screen edge').toBe(metrics.viewport);
     expect(metrics.radius).toBe('0px');
     expect(metrics.shadow).toBe('none');
   } else {
+    expect(metrics.background).toMatch(/^rgb\(/);
+    expect(metrics.shadow).not.toBe('none');
+    expect(metrics.radius).not.toBe('0px');
     expect(metrics.left).toBeGreaterThanOrEqual(7);
     expect(metrics.right).toBeLessThanOrEqual(metrics.viewport - 7);
   }
@@ -44,17 +49,26 @@ Then('the reading surface is opaque and fits the viewport', async ({ page, audit
   await page.screenshot({ path: externalDestination(join(catalogue.output, `${audit.story}-${audit.width}.png`)), fullPage: true });
 });
 
-Then('the inset panel overlaps the introduction without covering its title', async ({ page, audit }) => {
+Then('the responsive reading panel follows the introduction without covering its title', async ({ page, audit }) => {
   const metrics = await page.evaluate(() => {
     const rect = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
     const panel = rect('.reading-panel'), intro = rect('.page-intro'), title = rect('.page-intro h1');
-    const header = rect('.site-header');
-    return { panelTop: panel.top, introBottom: intro.bottom, titleBottom: title.bottom, titleTop: title.top, headerBottom: header.bottom };
+    // The overlay header includes empty bottom padding, especially when links wrap at 577px.
+    // Avoid its visible text and buttons, not the unpainted container bounds.
+    const headerPaintBottom = Math.max(...Array.from(document.querySelectorAll('.site-header a, .site-header summary, .site-header button')).flatMap(control => {
+      if (!control.checkVisibility({ checkVisibilityCSS: true })) return [];
+      if (control.tagName === 'BUTTON') return [control.getBoundingClientRect().bottom];
+      const text = document.createRange();
+      text.selectNodeContents(control);
+      return [text.getBoundingClientRect().bottom];
+    }));
+    return { viewport: innerWidth, panelTop: panel.top, introBottom: intro.bottom, titleBottom: title.bottom, titleTop: title.top, headerPaintBottom };
   });
   audit.measurements.push(metrics);
-  expect(metrics.panelTop).toBeLessThan(metrics.introBottom - 1);
+  if (metrics.viewport <= 576) expect(Math.abs(metrics.panelTop - metrics.introBottom), 'mobile reading content follows the hero without overlap').toBeLessThanOrEqual(1);
+  else expect(metrics.panelTop, 'desktop inset panel retains its overlap').toBeLessThan(metrics.introBottom - 1);
   expect(metrics.panelTop).toBeGreaterThan(metrics.titleBottom + 8);
-  expect(metrics.titleTop).toBeGreaterThanOrEqual(metrics.headerBottom);
+  expect(metrics.titleTop, 'the title stays below visible navigation text and controls').toBeGreaterThanOrEqual(metrics.headerPaintBottom);
 });
 
 Then('the reading column uses the available width up to 65 characters', async ({ page, audit }) => {
@@ -91,11 +105,19 @@ Then('the introduction title uses {string} treatment without overflow', async ({
   expect(metrics.right).toBeLessThanOrEqual(metrics.viewport);
 });
 
-Then('the marketing background {string} is painted beyond the introduction', async ({ page, audit }, background: string) => {
+Then('the responsive marketing background preserves the {string} desktop variant', async ({ page, audit }, background: string) => {
   const metrics = await page.locator('.marketing-page').evaluate(surface => {
     const box = surface.getBoundingClientRect(), intro = surface.querySelector('.page-intro')!.getBoundingClientRect();
-    const css = getComputedStyle(surface);
-    return { image: css.backgroundImage, base: css.backgroundColor, height: box.height, introHeight: intro.height, sampleY: Math.floor(box.bottom - 20) };
+    const css = getComputedStyle(surface), hero = surface.querySelector('.page-intro')!;
+    const fade = getComputedStyle(hero, '::after');
+    const probe = document.createElement('div');
+    probe.style.backgroundColor = 'var(--marketing-reading-surface)';
+    surface.append(probe);
+    const readingSurface = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return { viewport: innerWidth, image: css.backgroundImage, base: css.backgroundColor, readingSurface, heroImage: getComputedStyle(hero).backgroundImage,
+      fadeHeight: parseFloat(fade.height), fadeImage: fade.backgroundImage, rem: parseFloat(getComputedStyle(document.documentElement).fontSize),
+      height: box.height, introHeight: intro.height, introBottom: intro.bottom + scrollY, sampleY: Math.floor(box.bottom + scrollY - 20) };
   });
   audit.measurements.push(metrics);
   expect(metrics.height).toBeGreaterThan(metrics.introHeight + 400);
@@ -105,7 +127,27 @@ Then('the marketing background {string} is painted beyond the introduction', asy
   const expected = metrics.base.match(/[\d.]+/g)!.slice(0, 3).map(Number);
   const delta = Math.max(...expected.map((channel, index) => Math.abs(channel - data[index])));
   audit.measurements.push({ sample: [...data.slice(0, info.channels)], base: expected, delta });
-  if (background === 'pattern') {
+  if (metrics.viewport <= 576) {
+    expect.soft(metrics.heroImage, 'every mobile variant paints artwork on its introduction').toContain('repeating-linear-gradient');
+    expect.soft(metrics.fadeImage, 'every mobile variant fades its introduction').toContain('linear-gradient');
+    expect.soft(metrics.fadeHeight, 'the mobile fade occupies the last 3rem').toBe(3 * metrics.rem);
+    expect(metrics.base, 'the whole mobile canvas uses the opaque reading surface').toBe(metrics.readingSurface);
+    expect(metrics.base).toMatch(/^rgb\(/);
+    expect(metrics.image, 'no repeating artwork beneath prose or near the footer').toBe('none');
+    expect(delta, 'the lower canvas actually renders the reading surface').toBeLessThanOrEqual(1);
+    const surface = metrics.readingSurface.match(/[\d.]+/g)!.slice(0, 3).map(Number);
+    const distances: number[] = [];
+    for (const offset of [metrics.fadeHeight - 2, metrics.fadeHeight / 2, 1]) {
+      const { data, info } = await sharp(image).extract({ left: 0, top: Math.floor(metrics.introBottom - offset), width: metrics.viewport, height: 1 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      let distance = 0;
+      for (let x = 0; x < info.width; x++) for (let channel = 0; channel < 3; channel++) distance += Math.abs(data[x * info.channels + channel] - surface[channel]);
+      distances.push(distance / (info.width * 3));
+    }
+    audit.measurements.push({ fadePixelDistancesFromReadingSurface: distances });
+    expect(distances[0], 'visible patterned hero at the start of the fade').toBeGreaterThan(1);
+    expect(distances[1], 'rendered pattern fades towards the canvas').toBeLessThan(distances[0]);
+    expect(distances[2], 'hero bottom merges into the flat reading canvas').toBeLessThanOrEqual(1);
+  } else if (background === 'pattern') {
     expect(metrics.image).toContain('repeating-linear-gradient');
     expect(delta, 'the lower outer canvas visibly paints the artwork rather than a flat fallback').toBeGreaterThan(1);
   } else {

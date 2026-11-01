@@ -1,10 +1,10 @@
 Feature: Marketing page composition
-  Real Astro compositions let the reviewer compare a fading introduction with a persistent patterned canvas.
+  Real Astro compositions preserve desktop variants and fade every mobile hero into a flat reading canvas.
 
-  Scenario Outline: Marketing composition keeps decoration outside opaque reading content
+  Scenario Outline: Marketing composition keeps decoration outside responsive reading content
     Given the marketing page story "<story>" at <width> pixels in "<theme>"
-    Then the marketing background "<background>" is painted beyond the introduction
-    And the reading surface is opaque and fits the viewport
+    Then the responsive marketing background preserves the "<background>" desktop variant
+    And the responsive reading surface fits the viewport
 
     Examples:
       | story | width | theme | background |
@@ -16,3 +16,15 @@ Feature: Marketing page composition
       | pattern-light | 390 | light | pattern |
       | fade-dark | 390 | dark | fade |
       | pattern-dark | 390 | dark | pattern |
+      | fade-light | 576 | light | fade |
+      | fade-dark | 576 | dark | fade |
+      | pattern-light | 576 | light | pattern |
+      | pattern-dark | 576 | dark | pattern |
+      | fade-light | 577 | light | fade |
+      | fade-dark | 577 | dark | fade |
+      | pattern-light | 577 | light | pattern |
+      | pattern-dark | 577 | dark | pattern |
+      | article-pattern-light | 576 | light | pattern |
+      | article-pattern-dark | 576 | dark | pattern |
+      | article-pattern-light | 577 | light | pattern |
+      | article-pattern-dark | 577 | dark | pattern |

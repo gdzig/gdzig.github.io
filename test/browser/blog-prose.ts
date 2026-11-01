@@ -7,7 +7,7 @@ import { proseSlug, quoteVariants, writeProseFixture } from '../fixtures/blog/pr
 
 // Deliberately not *.test.ts: browser tooling is optional and never auto-installed.
 const repository = resolve(import.meta.dir, '../..');
-const widths = [390, 576, 768, 1447];
+const widths = [390, 576, 577, 768, 1447];
 const themes = ['light', 'dark'] as const;
 type Check = { name: string; pass: boolean; actual: unknown; expected: unknown };
 const report = { startedAt: new Date().toISOString(), build: null as unknown, cases: [] as { width: number; theme: string; checks: Check[] }[], blockedExternal: [] as string[], error: null as string | null };
@@ -67,15 +67,29 @@ function measureProse(variants: readonly string[]): Check[] {
   const rem = px(document.documentElement, 'font-size');
   const prose = element('.blog-prose');
   const article = element('.blog-post');
-  const composition = document.querySelector('.marketing-page');
-  check('article has persistent branded backdrop', !!composition && css(composition).backgroundImage.includes('repeating-linear-gradient'), composition && css(composition).backgroundImage, 'persistent grid and gradient');
-  const panel = article.querySelector('.reading-panel');
-  check('article prose is inside an opaque reading surface', !!panel && panel.contains(prose) && /^rgb\(/.test(css(panel).backgroundColor) && css(panel).backgroundImage === 'none', panel && css(panel).backgroundColor, 'opaque panel without artwork');
-  if (panel && innerWidth <= 576) {
+  const composition = element('.marketing-page');
+  const panel = element('.reading-panel', article);
+  const intro = element('.page-intro', article);
+  check('article prose remains within the reading surface', panel.contains(prose), panel.contains(prose), true);
+  check('reading wrapper has no decorative artwork', css(panel).backgroundImage === 'none', css(panel).backgroundImage, 'none');
+  if (innerWidth <= 576) {
+    check('mobile article has a flat opaque canvas through its ending', css(composition).backgroundImage === 'none' && /^rgb\(/.test(css(composition).backgroundColor), { image: css(composition).backgroundImage, color: css(composition).backgroundColor }, 'opaque flat reading canvas');
+    check('mobile wrapper has no separate panel paint', css(panel).backgroundColor === 'rgba(0, 0, 0, 0)', css(panel).backgroundColor, 'rgba(0, 0, 0, 0)');
+    check('mobile introduction retains branded artwork', css(intro).backgroundImage.includes('repeating-linear-gradient'), css(intro).backgroundImage, 'branded grid and gradient on intro only');
+    const fade = getComputedStyle(intro, '::after');
+    check('mobile introduction has a visible non-interactive fade', fade.content !== 'none' && fade.content !== 'normal' && fade.backgroundImage.includes('linear-gradient') && fade.backgroundImage.includes(css(composition).backgroundColor) && fade.pointerEvents === 'none', { content: fade.content, image: fade.backgroundImage, pointerEvents: fade.pointerEvents }, 'fade ending at the reading canvas color');
+    near('mobile fade spans three rem', parseFloat(fade.height), 3 * rem);
+    near('mobile fade reaches the introduction edge', parseFloat(fade.bottom), 0);
+    near('mobile reading surface follows the intro without overlap', rect(panel).top, rect(intro).bottom);
     near('mobile surface reaches left screen edge', rect(panel).left, 0);
     near('mobile surface reaches right screen edge', rect(panel).right, innerWidth);
     near('mobile surface has no rounded chrome', px(panel, 'border-top-left-radius'), 0);
     check('mobile surface has no panel shadow', css(panel).boxShadow === 'none', css(panel).boxShadow, 'none');
+  } else {
+    check('desktop article retains persistent branded backdrop', css(composition).backgroundImage.includes('repeating-linear-gradient'), css(composition).backgroundImage, 'persistent grid and gradient');
+    check('desktop article retains an opaque inset panel', /^rgb\(/.test(css(panel).backgroundColor) && rect(panel).left > 0 && rect(panel).right < innerWidth, { color: css(panel).backgroundColor, left: rect(panel).left, right: rect(panel).right }, 'opaque inset panel');
+    check('desktop panel still overlaps the intro', rect(panel).top < rect(intro).bottom - 1, { panelTop: rect(panel).top, introBottom: rect(intro).bottom }, 'panel top above intro bottom');
+    check('desktop panel retains its border and shadow', css(panel).boxShadow !== 'none', css(panel).boxShadow, 'existing panel shadow');
   }
   const quotes = [...prose.querySelectorAll<HTMLElement>(':scope > blockquote')];
   check('fixture quote variants', quotes.length === variants.length, quotes.length, variants.length);
@@ -263,7 +277,7 @@ async function main() {
   }
   const failures = report.cases.flatMap(entry => entry.checks.filter(check => !check.pass));
   const failed = !!report.error || failures.length > 0 || report.cases.length !== widths.length * themes.length;
-  console.log(`${failed ? 'RED' : 'GREEN'}: ${report.cases.length}/8 cases, ${failures.length} assertion failures`);
+  console.log(`${failed ? 'RED' : 'GREEN'}: ${report.cases.length}/${widths.length * themes.length} cases, ${failures.length} assertion failures`);
   process.exitCode = failed ? 1 : 0;
 }
 await main();

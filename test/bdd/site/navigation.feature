@@ -7,7 +7,7 @@ Feature: Navigate the GDZig website
     And I follow the primary navigation link "Blog"
     Then I arrive at the website path "/blog/"
     And the marketing page shares the branded shell and "Blog" introduction
-    And the blog reading surface is opaque and responsive
+    And the blog reading surface follows its responsive treatment
     When I follow the primary navigation link "Showcase"
     Then I arrive at the website path "/showcase/"
     And the marketing page shares the branded shell and "Made with GDZig" introduction
@@ -19,6 +19,10 @@ Feature: Navigate the GDZig website
       | width | theme |
       | 390   | light |
       | 390   | dark  |
+      | 576   | light |
+      | 576   | dark  |
+      | 577   | light |
+      | 577   | dark  |
       | 1447  | light |
       | 1447  | dark  |
 
