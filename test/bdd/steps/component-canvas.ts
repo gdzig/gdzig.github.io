@@ -43,13 +43,13 @@ Then('the production component is visible in theme {string} without overflow', a
     expect(metrics.href).toBe('#fixture-action');
     expect(metrics.role).toBe('button');
     expect(metrics.outline).toBe(audit.story.includes('--outline'));
-    expect(metrics.color).toBe(metrics.outline ? 'rgb(248, 239, 227)' : 'rgb(23, 19, 11)');
+    expect(metrics.color).toBe(metrics.outline && theme === 'dark' ? 'rgb(248, 239, 227)' : 'rgb(23, 19, 11)');
     expect(metrics.background).toBe(metrics.outline ? 'rgba(0, 0, 0, 0)' : 'rgb(246, 163, 29)');
   } else {
     for (const href of ['/blog/', '/showcase/', '/docs/', 'https://github.com/gdzig/gdzig', 'https://discord.gg/GEUZGRGeDj']) {
       await expect(page.locator(`.site-header a[href="${href}"]`)).toHaveCount(2);
     }
-    expect(metrics.color).toBe(audit.story.includes('--overlay') ? 'rgb(255, 255, 255)' : theme === 'dark' ? 'rgb(248, 239, 227)' : 'rgb(23, 19, 11)');
+    expect(metrics.color).toBe(theme === 'dark' ? audit.story.includes('--overlay') ? 'rgb(255, 255, 255)' : 'rgb(248, 239, 227)' : 'rgb(23, 19, 11)');
     await expect(page.locator('.wordmark[href="/"]')).toHaveCount(1);
     await expect(page.locator('#theme-toggle')).toHaveAttribute('aria-label', `Switch to ${theme === 'light' ? 'dark' : 'light'} theme`);
     await expect(page.locator('.site-header')).toHaveClass(audit.story.includes('--overlay') ? /site-header-overlay/ : /^(?!.*site-header-overlay)/);

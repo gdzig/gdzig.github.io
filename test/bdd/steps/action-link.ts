@@ -23,7 +23,7 @@ Then('the action link exposes native interaction states', async ({ page, audit, 
       return { background: s.backgroundColor, color: s.color, outline: s.outline, outlineColor: s.outlineColor, outlineWidth: s.outlineWidth, outlineStyle: s.outlineStyle, shadow: s.boxShadow };
     });
     audit.measurements.push({ state, ...paint });
-    if (state === 'hover') expect(paint.background).toBe(audit.story.includes('--outline') ? 'rgb(248, 239, 227)' : 'rgb(255, 183, 67)');
+    if (state === 'hover') expect(paint.background).toBe(audit.story.includes('--outline') ? audit.theme === 'light' ? 'rgb(23, 19, 11)' : 'rgb(248, 239, 227)' : 'rgb(255, 183, 67)');
     if (state === 'focus') {
       const outline = paint.outlineColor === 'rgb(246, 163, 29)' && parseFloat(paint.outlineWidth) > 0 && paint.outlineStyle !== 'none';
       const shadow = paint.shadow.includes('rgba(246, 163, 29, 0.45)') && /[1-9][\d.]*px/.test(paint.shadow);
