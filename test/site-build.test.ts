@@ -187,6 +187,19 @@ describe('static site artifact', () => {
     }
   }, 180_000);
 
+  test('keeps wide blog tables readable inside a local scroll container', async () => {
+    const html = await readFile(join(outputDirectory, 'blog', 'index.html'), 'utf8');
+    const css = [
+      await readLinkedCss(html),
+      ...[...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map(([, body]) => body),
+    ].join('\n');
+    const tableRule = css.match(/\.pico \.blog-prose table\{([^}]*)\}/)?.[1] ?? '';
+
+    expect(tableRule).toContain('max-width:100%');
+    expect(tableRule).toContain('overflow-x:auto');
+    expect(tableRule).toContain('overflow-wrap:normal');
+  });
+
   test('contains the empty collection-backed Blog page', async () => {
     const html = await readFile(join(outputDirectory, 'blog', 'index.html'), 'utf8');
 
