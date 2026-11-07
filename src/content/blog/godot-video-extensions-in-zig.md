@@ -5,6 +5,10 @@ author:
   name: "Clay Tercek"
   url: "https://tercek.me/"
 draft: true
+authorNotice:
+  guest: true
+  roles:
+    - community member
 source:
   url: "https://tercek.me/blog/godot-video-extensions-in-zig/"
   publishedAt: "2026-09-26"

@@ -119,6 +119,48 @@ test('blog fixtures start empty without changing authored source content', async
   }
 });
 
+test('author notices opt in before the body and reuse the original source postamble', async () => {
+  const site = await createBlogSite();
+  try {
+    const source = { url: 'https://example.invalid/original/', publishedAt: '1999-01-01' };
+    for (const [id, extra] of [
+      ['with-notice', { authorNotice: { guest: true, roles: ['community member'] } }],
+      ['without-notice', {}],
+    ] as const) {
+      await site.writePost(id, 'md', post({ source, ...extra }, 'FIXTURE_NOTICE_BODY'));
+    }
+    const server = await site.start('dev');
+    for (const id of ['with-notice', 'without-notice']) {
+      const response = await get(`${server.origin}/blog/${id}/`);
+      expect(response.status).toBe(200);
+      const html = await response.text();
+      let notice = '', footer = '';
+      const noticeLinks: string[] = [], footerLinks: string[] = [], dates: string[] = [];
+      await new HTMLRewriter()
+        .on('.author-notice p', { element() { notice += ' '; }, text(chunk) { notice += chunk.text; } })
+        .on('.author-notice a:not([rel="author"])', { element(node) { noticeLinks.push(node.getAttribute('href')!); } })
+        .on('.author-notice time', { element(node) { dates.push(node.getAttribute('datetime')!); } })
+        .on('.blog-source-footer', { text(chunk) { footer += chunk.text; } })
+        .on('.blog-source-footer a', { element(node) { footerLinks.push(node.getAttribute('href')!); } })
+        .transform(new Response(html)).text();
+      expect(footerLinks).toEqual([source.url]);
+      expect(footer).toContain('Originally published');
+      expect(footer).toContain('January 1, 1999');
+      if (id === 'with-notice') {
+        expect(notice.replace(/\s+/g, ' ').trim()).toBe(`This is a guest post by ${baseFields.author.name}, a GDZig community member. This post was originally published at ${source.url} on January 1, 1999.`);
+        expect(noticeLinks).toEqual(footerLinks);
+        expect(dates).toEqual([iso(source.publishedAt)]);
+        expect(html.indexOf('class="author-notice"')).toBeLessThan(html.indexOf('FIXTURE_NOTICE_BODY'));
+      } else {
+        expect(notice).toBe('');
+        expect(noticeLinks).toEqual([]);
+      }
+      expect(html.indexOf('FIXTURE_NOTICE_BODY')).toBeLessThan(html.indexOf('class="blog-source-footer"'));
+    }
+    await server.stop();
+  } finally { await site.dispose(); }
+}, 120_000);
+
 // One production build exercises all published metadata/body/image contracts.
 test('real production publishing, parsed head/JSON-LD, ordered listing and HTTP cards', async () => {
   const source = resolve(import.meta.dir, '..');

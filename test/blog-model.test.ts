@@ -23,6 +23,29 @@ test('publication is deliberate and boundary-inclusive', () => {
   expect(postCardPath('nested/fixture')).toBe('/og/blog/nested/fixture.png');
 });
 
+describe('author notice metadata', () => {
+  test('remains absent unless explicitly requested', () => {
+    expect(blogSchema.parse(draft)).not.toHaveProperty('authorNotice');
+  });
+
+  test('defaults an opted-in notice to neutral credit without inferred roles', () => {
+    expect(blogSchema.parse({ ...draft, authorNotice: {} })).toHaveProperty('authorNotice', { guest: false, roles: [] });
+  });
+
+  test('preserves explicit guest status and selected roles', () => {
+    const authorNotice = { guest: true, roles: ['community member', 'contributor', 'maintainer', 'founder'] };
+    expect(blogSchema.parse({ ...draft, authorNotice })).toHaveProperty('authorNotice', authorNotice);
+  });
+
+  test.each([
+    { guest: 'true' },
+    { roles: ['administrator'] },
+    { roles: 'maintainer' },
+  ])('rejects invalid notice metadata %j', authorNotice => {
+    expect(blogSchema.safeParse({ ...draft, authorNotice }).success).toBe(false);
+  });
+});
+
 describe('metadata validation', () => {
   const valid: [string, Record<string, unknown>][] = [
     ['minimal draft', {}],

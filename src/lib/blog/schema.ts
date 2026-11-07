@@ -28,6 +28,10 @@ export const blogSchema = z.object({
   title: nonempty,
   description: nonempty,
   author: z.object({ name: nonempty, url: httpUrl.optional() }),
+  authorNotice: z.object({
+    guest: z.boolean().default(false),
+    roles: z.array(z.enum(['community member', 'contributor', 'maintainer', 'founder'])).default([]),
+  }).optional(),
   draft: z.boolean().default(true),
   publishedAt: dateValue.optional(),
   updatedAt: dateValue.optional(),

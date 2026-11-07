@@ -4,6 +4,7 @@ import SiteLayout from './SiteLayout.astro';
 import MarketingPage from '../components/marketing/MarketingPage.astro';
 import PageIntro from '../components/marketing/PageIntro.astro';
 import ReadingPanel from '../components/marketing/ReadingPanel.astro';
+import AuthorNotice from '../components/marketing/AuthorNotice.astro';
 import { postMetadata } from '../lib/blog/metadata';
 import { publicationContext } from '../lib/blog/posts';
 import { formatDate, isPublished } from '../lib/blog/policy';
@@ -17,7 +18,7 @@ const { post } = Astro.props;
 if (!Astro.site) throw new Error('Blog pages require a configured Astro.site.');
 const context = publicationContext();
 const head = postMetadata(post, Astro.site, context);
-const { title, author, publishedAt, updatedAt, tags, cover, source } = post.data;
+const { title, author, authorNotice, publishedAt, updatedAt, tags, cover, source } = post.data;
 ---
 
 <SiteLayout title={head.title} description={head.description} head={head}>
@@ -37,6 +38,7 @@ const { title, author, publishedAt, updatedAt, tags, cover, source } = post.data
       <ReadingPanel>
         {cover && <img class="blog-cover" src={cover.src} alt={cover.alt} loading="eager" />}
         <hr />
+        {authorNotice && <AuthorNotice author={author} {...authorNotice} source={source} />}
         <div class="blog-prose"><slot /></div>
         {source && (
           <footer class="blog-source-footer">
