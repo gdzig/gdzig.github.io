@@ -37,7 +37,6 @@ const { title, author, authorNotice, publishedAt, updatedAt, tags, cover, source
       </PageIntro>
       <ReadingPanel>
         {cover && <img class="blog-cover" src={cover.src} alt={cover.alt} loading="eager" />}
-        <hr />
         {authorNotice && <AuthorNotice author={author} {...authorNotice} source={source} />}
         <div class="blog-prose"><slot /></div>
         {source && (

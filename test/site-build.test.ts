@@ -224,6 +224,8 @@ describe('static site artifact', () => {
     expect(html).toContain('datetime="2026-11-07T00:00:00.000Z">November 7, 2026</time>');
     expect(html).toContain('datetime="2026-09-26T00:00:00.000Z">September 26, 2026</time>');
     expect(html).toContain('a GDZig community member and contributor.');
+    expect(html.match(/<hr\b/g) ?? []).toHaveLength(1);
+    expect(html).toMatch(/<footer class="blog-source-footer"[^>]*>\s*<hr\b/);
     expect(html).toContain('rel="author"');
     expect((await stat(join(outputDirectory, 'og', 'blog', 'godot-video-extensions-in-zig.png'))).size).toBeGreaterThan(0);
   });
