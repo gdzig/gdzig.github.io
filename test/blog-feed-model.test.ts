@@ -6,9 +6,48 @@ import { formats, inspectHtml, parseFeed } from './helpers/feeds';
 const site = new URL('https://gdzig.github.io/');
 const now = new Date('2026-11-07T00:00:00.000Z');
 const fields = { title: 'A post', description: 'A summary.', author: { name: 'A contributor' }, draft: false, publishedAt: '2026-11-01' };
-const post = (id: string, extra: Record<string, unknown> = {}) => ({ id, data: blogSchema.parse({ ...fields, ...extra }) });
+const post = (id: string, extra: Record<string, unknown> = {}) => ({ id, data: blogSchema.parse({ ...fields, ...extra }), content: '<p>A full article.</p>' });
 
 for (const format of formats) describe(`${format.id} feed mapping`, () => {
+  test('includes the informative cover with an absolute URL and escaped alternative text', async () => {
+    const article = post('cover', { cover: { src: 'https://cdn.example.com/cover.png?a=1&b=2', alt: 'A "diagram" & <detail>' } });
+    const entry = parseFeed(serializeFeed([article], site, now, format.id), format.id).entries[0];
+    const images: { src: string | null; alt: string | null }[] = [];
+    await new HTMLRewriter().on('img', { element(element) {
+      images.push({ src: element.getAttribute('src'), alt: element.getAttribute('alt') });
+    } }).transform(new Response(entry.content)).text();
+    expect(images).toEqual([{ src: 'https://cdn.example.com/cover.png?a=1&amp;b=2', alt: 'A &quot;diagram&quot; &amp; &lt;detail&gt;' }]);
+    expect((await inspectHtml(entry.content)).text).toBe('A full article.');
+  });
+
+  test('keeps the summary separate even when the article body is empty', async () => {
+    const entry = parseFeed(serializeFeed([{ ...post('empty'), content: '' }], site, now, format.id), format.id).entries[0];
+    const summary = format.id === 'json' ? entry.summary : (await inspectHtml(entry.summary)).text;
+    expect(summary).toBe('A summary.');
+    expect((await inspectHtml(entry.content)).text).toBe('');
+  });
+
+  test('publishes the supplied full article separately from the concise summary', async () => {
+    const article = {
+      ...post('full', { source: { url: 'https://example.com/original/', publishedAt: '2020-01-01' } }),
+      content: '<h2 id="middle">Full article heading</h2><p>Article start &amp; detail.</p><pre><code>const x = "&amp;amp;"; // ]]> and ]]></code></pre><p>Article ending.</p>',
+    };
+    const entry = parseFeed(serializeFeed([article], site, now, format.id), format.id).entries[0];
+    const content = await inspectHtml(entry.content);
+    expect(content.text).toContain('Full article heading');
+    expect(content.text).toContain('Article start & detail.');
+    expect(content.text).toContain('const x = "&amp;"; // ]]> and ]]>');
+    expect(content.text).toContain('Article ending.');
+    expect(content.text).not.toContain('A summary.');
+    expect(content.text).toContain('January 1, 2020');
+    expect(content.elements.map(element => element.tag)).toContain('h2');
+    expect(content.elements.map(element => element.tag)).toContain('pre');
+    expect(content.elements.map(element => element.tag)).toContain('code');
+    const summary = format.id === 'json' ? entry.summary : (await inspectHtml(entry.summary)).text;
+    expect(summary).toBe('A summary.');
+    expect(entry.author).toBe('A contributor');
+  });
+
   test('selects public posts at the UTC boundary and keeps deterministic equal-date order', () => {
     const posts = [
       post('z-boundary', { publishedAt: '2026-11-07T11:00:00+11:00' }),
@@ -93,7 +132,7 @@ for (const format of formats) describe(`${format.id} feed mapping`, () => {
     expect(entry.author).toBe(author);
     expect(entry.tags).toEqual(['Zig &amp; Godot', '→']);
     const content = await inspectHtml(entry.content);
-    expect(content.text).toBe(description);
+    expect(content.text).toBe('A full article.');
     expect(content.elements.map(element => element.tag)).toEqual(['div', 'p']);
     const summary = format.id === 'json' ? entry.summary : (await inspectHtml(entry.summary)).text;
     expect(summary).toBe(description);

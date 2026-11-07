@@ -18,12 +18,15 @@
     "test:bdd": "bun run test:bdd:generate && playwright test --config playwright.config.ts"
   },
   "dependencies": {
+    "@astrojs/mdx": "8.0.1",
     "@astrojs/starlight": "^0.42.2",
     "@fontsource/inter": "5.3.0",
     "@fontsource/noto-sans-math": "5.3.0",
     "@picocss/pico": "2.1.1",
     "astro": "^7.3.3",
     "feed": "5.2.0",
+    "htmlparser2": "12.0.0",
+    "sanitize-html": "2.18.1",
     "satori": "0.26.0",
     "sharp": "^0.35.3",
     "simple-icons": "^16.32.0"
@@ -32,6 +35,7 @@
     "@playwright/test": "1.62.1",
     "@storybook-astro/framework": "1.14.0",
     "@storybook/builder-vite": "10.6.5",
+    "@types/sanitize-html": "2.16.2",
     "playwright-bdd": "9.2.1",
     "storybook": "10.6.5",
     "xml-js": "1.6.11"
