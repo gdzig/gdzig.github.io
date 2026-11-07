@@ -1,6 +1,7 @@
 ---
 import PostHog from '../components/posthog.astro';
 import BlogHead from '../components/BlogHead.astro';
+import FeedLinks from '../components/FeedLinks.astro';
 import SiteHeader from '../components/marketing/SiteHeader.astro';
 import SiteFooter from '../components/marketing/SiteFooter.astro';
 import { initializeTheme } from '../components/marketing/theme.js';
@@ -27,6 +28,7 @@ const isLanding = variant === 'landing';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     {head && <BlogHead data={head} />}
+    <FeedLinks />
     <PostHog />
     <script is:inline set:html={`(${initializeTheme.toString()})();`} />
 

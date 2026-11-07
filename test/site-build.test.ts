@@ -90,6 +90,44 @@ beforeAll(() => {
 }, 180_000);
 
 describe('static site artifact', () => {
+  test.each([
+    'index.html',
+    'blog/index.html',
+    'blog/godot-video-extensions-in-zig/index.html',
+    'showcase/index.html',
+    'docs/index.html',
+  ])('advertises all three blog feeds only in the head of %s', async (path) => {
+    const html = await readFile(join(outputDirectory, path), 'utf8');
+    const feeds: { href: string | null; type: string | null; title: string | null }[] = [];
+    const visibleFeedLinks: string[] = [];
+
+    await new HTMLRewriter()
+      .on('head link[rel="alternate"]', {
+        element(element) {
+          feeds.push({
+            href: element.getAttribute('href'),
+            type: element.getAttribute('type'),
+            title: element.getAttribute('title'),
+          });
+        },
+      })
+      .on('body [href]', {
+        element(element) {
+          const href = element.getAttribute('href')!;
+          if (/\/(rss\.xml|atom\.xml|feed\.json)$/.test(href)) visibleFeedLinks.push(href);
+        },
+      })
+      .transform(new Response(html))
+      .text();
+
+    expect(feeds).toEqual([
+      { href: 'https://gdzig.github.io/rss.xml', type: 'application/rss+xml', title: 'GDZig Blog RSS Feed' },
+      { href: 'https://gdzig.github.io/atom.xml', type: 'application/atom+xml', title: 'GDZig Blog Atom Feed' },
+      { href: 'https://gdzig.github.io/feed.json', type: 'application/feed+json', title: 'GDZig Blog JSON Feed' },
+    ]);
+    expect(visibleFeedLinks).toEqual([]);
+  });
+
   test('contains the Astro landing page', async () => {
     const html = await readFile(join(outputDirectory, 'index.html'), 'utf8');
 

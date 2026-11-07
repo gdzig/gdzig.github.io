@@ -1,0 +1,7 @@
+---
+import { FEED_FORMATS } from '../lib/blog/feed-formats';
+---
+
+{FEED_FORMATS.map(({ path, type, title }) => (
+  <link rel="alternate" type={type} title={title} href={new URL(path, Astro.site)} />
+))}
