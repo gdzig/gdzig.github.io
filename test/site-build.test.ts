@@ -79,6 +79,7 @@ beforeAll(() => {
   const result = spawnSync('bun', ['run', 'build'], {
     cwd: siteDirectory,
     encoding: 'utf8',
+    env: { ...process.env, NODE_ENV: 'production' },
   });
 
   if (result.status !== 0) {

@@ -20,7 +20,7 @@ async function freePort(): Promise<number> {
   return address.port;
 }
 
-/** Actual site inputs, isolated content/cache/output, and no source .env files. */
+/** Actual site inputs, empty blog content, isolated cache/output, and no source .env files. */
 export async function createBlogSite(): Promise<{
   root: string;
   writePost(id: string, extension: 'md' | 'mdx', content: string): Promise<void>;
@@ -42,6 +42,9 @@ export async function createBlogSite(): Promise<{
     for (const input of ['src', 'public', 'scripts', 'astro.config.mjs', 'package.json', 'bun.lock', 'tsconfig.json']) {
       await cp(join(source, input), join(root, input), { recursive: true });
     }
+    const blog = join(root, 'src/content/blog');
+    await rm(blog, { recursive: true, force: true });
+    await mkdir(blog, { recursive: true });
     await symlink(join(source, 'node_modules'), join(root, 'node_modules'), 'dir');
     await writeFile(join(root, 'astro.fixture.config.mjs'), `import { defineConfig } from 'astro/config';
 import base from './astro.config.mjs';

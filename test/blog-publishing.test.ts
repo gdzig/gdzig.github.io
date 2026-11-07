@@ -106,6 +106,19 @@ async function fingerprint(directory: string) {
   }));
 }
 
+test('blog fixtures start empty without changing authored source content', async () => {
+  const sourceContent = resolve(import.meta.dir, '../src/content/blog');
+  const originalContent = await fingerprint(sourceContent);
+
+  const site = await createBlogSite();
+  try {
+    expect(await readdir(join(site.root, 'src/content/blog'), { recursive: true })).toEqual([]);
+  } finally {
+    await site.dispose();
+    expect(await fingerprint(sourceContent)).toEqual(originalContent);
+  }
+});
+
 // One production build exercises all published metadata/body/image contracts.
 test('real production publishing, parsed head/JSON-LD, ordered listing and HTTP cards', async () => {
   const source = resolve(import.meta.dir, '..');
