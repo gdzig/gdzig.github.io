@@ -11,6 +11,7 @@ export const storyIds = [
   ...['games-light', 'games-dark', 'long-light', 'long-dark'].map(id => `marketing-sectionheading--${id}`),
   ...['vector-wave-light', 'vector-wave-dark', 'native-video-light', 'native-video-dark', 'minimal-light', 'minimal-dark', 'long-light', 'long-dark'].map(id => `marketing-showcasecard--${id}`),
   ...['published-light', 'published-dark', 'draft-light', 'draft-dark', 'scheduled-light', 'scheduled-dark', 'no-author-url-light', 'no-author-url-dark', 'long-title-light', 'long-title-dark', 'no-date-light', 'no-date-dark'].map(id => `marketing-postsummary--${id}`),
+  ...['community-member-light', 'community-member-dark', 'contributor-light', 'contributor-dark', 'no-profile-light', 'no-profile-dark', 'long-name-light', 'long-name-dark'].map(id => `marketing-guestpostnotice--${id}`),
 ];
 export async function themeIs(page: Page | Frame, theme: string) {
   await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
