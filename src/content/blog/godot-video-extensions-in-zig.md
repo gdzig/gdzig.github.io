@@ -4,11 +4,13 @@ description: "My first Zig projects were ports of two Godot video extensions I'd
 author:
   name: "Clay Tercek"
   url: "https://tercek.me/"
-draft: true
+draft: false
+publishedAt: "2026-11-07"
 authorNotice:
   guest: true
   roles:
     - community member
+    - contributor
 source:
   url: "https://tercek.me/blog/godot-video-extensions-in-zig/"
   publishedAt: "2026-09-26"
