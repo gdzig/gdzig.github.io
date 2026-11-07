@@ -1,0 +1,11 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'outline';
+  accessibleLabel?: string;
+}
+
+const { href, variant = 'primary', accessibleLabel } = Astro.props;
+---
+
+<a href={href} role="button" class:list={['marketing-action', { outline: variant === 'outline' }]} aria-label={accessibleLabel}><slot /></a>

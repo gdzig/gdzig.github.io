@@ -1,0 +1,31 @@
+---
+import type { ComponentProps } from 'astro/types';
+import AuthorNotice from '../src/components/marketing/AuthorNotice.astro';
+
+interface Props {
+  authorName?: string;
+  authorUrl?: string;
+  guest?: boolean;
+  roles?: ComponentProps<typeof AuthorNotice>['roles'];
+  sourceUrl?: string;
+  sourcePublishedAt?: string;
+  theme?: 'light' | 'dark';
+}
+
+// Synthetic author data only. Guest status and roles are explicit editorial choices.
+const { authorName = 'Fixture author', authorUrl, guest, roles, sourceUrl, sourcePublishedAt } = Astro.props;
+const parsedDate = sourcePublishedAt ? new Date(sourcePublishedAt) : undefined;
+const publishedAt = parsedDate && Number.isFinite(parsedDate.getTime()) ? parsedDate : undefined;
+---
+
+<main class="author-notice-canvas">
+  <AuthorNotice author={{ name: authorName, url: authorUrl }} guest={guest} roles={roles} source={sourceUrl ? { url: sourceUrl, publishedAt } : undefined} />
+</main>
+
+<style>
+  .author-notice-canvas {
+    max-width: 50rem;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+</style>

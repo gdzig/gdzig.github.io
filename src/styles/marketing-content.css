@@ -1,0 +1,177 @@
+/* Presentational marketing units. These selectors do not restyle the homepage. */
+.marketing-section-heading {
+  max-width: 100%;
+  margin-bottom: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--marketing-rule);
+  border-radius: 0;
+  overflow-wrap: anywhere;
+}
+
+.marketing-section-heading h2 {
+  margin-bottom: 0.65rem;
+  color: var(--marketing-title);
+  font-size: clamp(1.65rem, 3vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.marketing-section-heading p:not(.eyebrow) {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--marketing-muted);
+}
+
+.pico .marketing-showcase-card {
+  min-width: 0;
+  margin: 0;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--marketing-title);
+  background: var(--marketing-reading-surface);
+  border: 1px solid var(--landing-outline-border);
+  border-top: 2px solid var(--marketing-rule);
+  border-radius: 0;
+  box-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+.marketing-showcase-card .showcase-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+  border: 1px solid var(--landing-outline-border);
+  border-radius: 0;
+}
+
+.marketing-showcase-card .showcase-tags {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  list-style: none;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+}
+
+.marketing-showcase-card .showcase-tags li {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--landing-outline-border);
+  max-width: 100%;
+  color: var(--landing-accent-text);
+  background: var(--landing-status-glow);
+  border-color: var(--landing-outline-border);
+  border-radius: 0;
+}
+
+.marketing-showcase-card .showcase-card-heading {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.marketing-showcase-card .showcase-card-heading h3 {
+  margin: 0;
+  min-width: 0;
+  color: var(--marketing-title);
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  line-height: 1.2;
+}
+
+.marketing-showcase-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.marketing-showcase-card h3 a:hover {
+  color: var(--landing-accent-text);
+  text-decoration: underline;
+}
+
+.marketing-showcase-card .showcase-author,
+.marketing-showcase-card .showcase-note {
+  color: var(--marketing-muted);
+}
+
+.marketing-showcase-card .showcase-author {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: start;
+  line-height: 1.4;
+}
+
+.marketing-showcase-card .showcase-note {
+  display: block;
+  margin-top: -0.2rem;
+  margin-bottom: var(--pico-typography-spacing-vertical);
+}
+
+.marketing-showcase-card .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+/* Higher specificity than the legacy pill action, isolated from hero-actions. */
+.pico .actions .marketing-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0.7rem 1rem;
+  color: var(--gdzig-on-accent);
+  background: var(--landing-accent);
+  border: 2px solid var(--landing-accent);
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.pico .actions .marketing-action span {
+  min-width: 0;
+}
+
+.pico .actions .marketing-action .link-icon {
+  flex: 0 0 auto;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.pico .actions .marketing-action:hover {
+  color: var(--gdzig-on-accent);
+  background: var(--landing-accent);
+  border-color: var(--marketing-title);
+}
+
+.pico .actions .marketing-action.outline {
+  color: var(--marketing-title);
+  background: transparent;
+  border-color: var(--landing-outline-border);
+}
+
+.pico .actions .marketing-action.outline:hover {
+  color: var(--landing-outline-hover-text);
+  background: var(--marketing-title);
+  border-color: var(--marketing-title);
+}

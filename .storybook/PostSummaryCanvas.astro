@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PostSummary from '../src/components/marketing/PostSummary.astro';
+import '../src/styles/blog.css';
+
+interface Props {
+  variant?: 'published' | 'draft' | 'scheduled' | 'no-author-url' | 'long-title' | 'no-date';
+  theme?: 'light' | 'dark';
+}
+
+const { variant = 'published' } = Astro.props;
+// Synthetic FIXTURE data only. These entries never enter a content collection.
+const now = new Date('2001-02-03T00:00:00.000Z');
+const post: CollectionEntry<'blog'> = {
+  id: 'FIXTURE group/FIXTURE summary',
+  collection: 'blog',
+  data: {
+    title: variant === 'long-title'
+      ? `FIXTURE_LONG_TITLE ${'FIXTURE wrapping title specimen '.repeat(12).trim()}`
+      : `FIXTURE_${variant.toUpperCase().replaceAll('-', '_')}_TITLE`,
+    description: 'FIXTURE_DESCRIPTION: Synthetic summary specimen, not publishable content.',
+    author: {
+      name: 'FIXTURE_AUTHOR',
+      ...(variant === 'no-author-url' ? {} : { url: 'https://example.invalid/FIXTURE-author' }),
+    },
+    draft: variant === 'draft' || variant === 'no-date',
+    ...(variant === 'no-date' ? {} : { publishedAt: new Date(variant === 'scheduled' ? '2001-02-04T00:00:00.000Z' : '2001-02-03T00:00:00.000Z') }),
+    tags: [],
+  },
+};
+---
+
+<section class="blog-index" aria-label="FIXTURE post summary">
+  <ol class="blog-list"><PostSummary post={post} now={now} /></ol>
+</section>
+
+<style>
+  section { width: calc(100% - 2rem); overflow-wrap: anywhere; }
+</style>

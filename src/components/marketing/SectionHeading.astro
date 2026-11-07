@@ -1,0 +1,16 @@
+---
+import '../../styles/marketing-content.css';
+
+interface Props {
+  id: string;
+  title: string;
+  description: string;
+}
+
+const { id, title, description } = Astro.props;
+---
+
+<header class="section-heading marketing-section-heading">
+  <h2 id={id}>{title}</h2>
+  <p>{description}</p>
+</header>

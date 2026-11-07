@@ -1,0 +1,200 @@
+.pico .blog-index,
+.pico .blog-post {
+  max-width: none;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pico .blog-post {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.pico .blog-source-footer {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+}
+
+.pico .blog-meta,
+.pico .blog-tags {
+  color: var(--gdzig-muted);
+  font-size: .9rem;
+}
+
+.pico .blog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.pico .blog-tags > li {
+  list-style: none;
+}
+
+.pico .blog-post hr {
+  margin-block: 2rem;
+  border-color: var(--gdzig-border);
+}
+
+.pico .blog-prose {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.pico .blog-prose h2 {
+  margin: 2rem 0 1rem;
+}
+
+.pico .blog-prose h3 {
+  margin: 1.5rem 0 .75rem;
+}
+
+.pico .blog-prose p,
+.pico .blog-prose ul,
+.pico .blog-prose ol,
+.pico .blog-prose dl {
+  margin: 0 0 1rem;
+}
+
+.pico .blog-prose li {
+  margin-bottom: .5rem;
+}
+
+.pico .blog-prose li > ul,
+.pico .blog-prose li > ol {
+  margin: .5rem 0 0;
+}
+
+.pico .blog-prose li:last-child,
+.pico .blog-prose li > :last-child {
+  margin-bottom: 0;
+}
+
+.pico .blog-prose pre {
+  margin: 1.5rem 0;
+  border-radius: .5rem;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.pico .blog-prose :not(pre) > code {
+  padding: .125rem .25rem;
+  border-radius: .25rem;
+  font-size: .9em;
+}
+
+/* Keep Pico's general button rules and Starlight-only colors out of this control.
+   Retain Expressive Code's native icon mask, clipboard handler and live feedback. */
+.pico .blog-post .blog-prose .expressive-code .frame .copy button {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  color: var(--gdzig-text);
+  background: var(--gdzig-surface);
+  border: 1px solid var(--gdzig-border);
+  border-radius: .3rem;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button > div {
+  display: none;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button::before {
+  border: 0;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button::after {
+  background-color: currentColor;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:hover,
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:focus-visible {
+  background: var(--gdzig-secondary-hover-background);
+  border-color: var(--gdzig-accent-background);
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:focus-visible {
+  outline: 2px solid var(--gdzig-accent-background);
+  outline-offset: 2px;
+}
+
+.pico .blog-post .blog-prose .expressive-code .frame .copy button:active {
+  color: var(--gdzig-on-accent);
+  background: var(--gdzig-accent-background);
+}
+
+.pico .blog-prose .expressive-code .copy .feedback {
+  --tooltip-bg: var(--gdzig-accent-background);
+  color: var(--gdzig-on-accent);
+}
+
+@media (hover: hover) {
+  .pico .blog-post .blog-prose .expressive-code .frame .copy button {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+.pico .blog-prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-wrap: normal;
+}
+
+.pico .blog-prose img,
+.pico .blog-cover {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.pico .blog-prose blockquote {
+  margin: 1.5rem 0;
+  padding: .25rem 0 .25rem 1.5rem;
+  border-inline-start: 3px solid var(--gdzig-accent-background);
+  font-style: normal;
+}
+
+.pico .blog-prose > :first-child,
+.pico .blog-prose blockquote > :first-child {
+  margin-top: 0;
+}
+
+.pico .blog-prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.pico .blog-prose img {
+  margin: 1.5rem auto;
+  border-radius: .5rem;
+}
+
+.pico .blog-list {
+  list-style: none;
+  padding: 0;
+}
+
+.pico .blog-list > li {
+  list-style: none;
+  margin-block: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--gdzig-border);
+}
+
+.pico .blog-preview {
+  color: var(--gdzig-text);
+  border-left: 3px solid var(--gdzig-accent-background);
+  padding-left: .75rem;
+}

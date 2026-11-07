@@ -1,0 +1,19 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, isPublished, postPath } from '../../lib/blog/policy';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  now: Date;
+}
+
+const { post, now } = Astro.props;
+---
+
+<li>
+  {!isPublished(post, now) && <p class="blog-preview">Unpublished preview</p>}
+  {post.data.publishedAt && <p class="blog-meta"><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time></p>}
+  <h2><a href={postPath(post.id)}>{post.data.title}</a></h2>
+  <p>{post.data.description}</p>
+  <p class="blog-meta">By {post.data.author.url ? <a href={post.data.author.url} rel="author">{post.data.author.name}</a> : post.data.author.name}</p>
+</li>

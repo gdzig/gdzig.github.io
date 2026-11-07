@@ -1,0 +1,11 @@
+---
+import SectionHeading from '../src/components/marketing/SectionHeading.astro';
+interface Props { variant?: 'games' | 'long' }
+const { variant = 'games' } = Astro.props;
+const longToken = 'FIXTURE_LONG_TEXT_'.repeat(12);
+---
+<main class="container">
+  <section aria-labelledby="fixture-section-title">
+    <SectionHeading id="fixture-section-title" title={variant === 'long' ? longToken : 'Games'} description={variant === 'long' ? `FIXTURE_DESCRIPTION ${longToken}` : 'Built with GDZig'} />
+  </section>
+</main>

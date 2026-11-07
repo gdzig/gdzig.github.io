@@ -1,0 +1,31 @@
+---
+import SiteHeader from '../src/components/marketing/SiteHeader.astro';
+import ActionLink from '../src/components/marketing/ActionLink.astro';
+
+interface Props {
+  kind: 'header' | 'action';
+  theme?: 'light' | 'dark';
+  overlay?: boolean;
+  href?: string;
+  variant?: 'primary' | 'outline';
+  label?: string;
+}
+
+const { kind, overlay = false, href = '#fixture-action', variant = 'primary', label = 'FIXTURE_ACTION' } = Astro.props;
+---
+
+{kind === 'header' && <SiteHeader overlay={overlay} />}
+<main id="main-content" class={kind === 'header' && !overlay ? 'container' : undefined}>
+  {kind === 'action' || overlay ? (
+    <section class="band band-hero" aria-labelledby="fixture-title">
+      <div class="container hero-content">
+        <h1 id="fixture-title">FIXTURE_MARKETING</h1>
+        {kind === 'action' && (
+          <div class="hero-actions" aria-label="Fixture actions">
+            <ActionLink href={href} variant={variant}>{label}</ActionLink>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : <h1>FIXTURE_HEADER</h1>}
+</main>

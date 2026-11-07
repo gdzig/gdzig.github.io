@@ -1,0 +1,55 @@
+---
+import SiteHeader from '../src/components/marketing/SiteHeader.astro';
+import MarketingPage from '../src/components/marketing/MarketingPage.astro';
+import PageIntro from '../src/components/marketing/PageIntro.astro';
+import ReadingPanel from '../src/components/marketing/ReadingPanel.astro';
+import '../src/styles/blog.css';
+
+interface Props {
+  background?: 'fade' | 'pattern';
+  article?: boolean;
+  empty?: boolean;
+  title?: string;
+  panelPadding?: number;
+  panelOverlap?: number;
+}
+
+const { background = 'fade', article = false, empty = false, title = article ? 'Article typography specimen' : 'Blog', panelPadding = 1.5, panelOverlap = 1.5 } = Astro.props;
+const fixtureParagraphs = Array.from({ length: 8 }, (_, index) => index + 1);
+---
+
+<div class="marketing-canvas" style={`--reading-panel-padding:${panelPadding}rem;--reading-panel-overlap:${panelOverlap}rem`}>
+  <SiteHeader overlay />
+  <main id="main-content" class="marketing-canvas-main">
+    <MarketingPage background={background}>
+      <PageIntro slot="intro" id="fixture-page-title" title={title} variant={article ? 'article' : 'page'}>
+        {article && <p slot="before-title" class="blog-meta"><time datetime="2001-01-01">January 1, 2001</time></p>}
+        {article && <><p class="blog-meta">By Fixture author</p><ul class="blog-tags" aria-label="Tags"><li>Fixture tag</li></ul></>}
+      </PageIntro>
+      <ReadingPanel>
+        {empty ? (
+          <section aria-label="Fixture empty blog"><h2>No posts published yet.</h2><p><a href="https://github.com/gdzig/gdzig">Follow the repository</a> for current changes.</p></section>
+        ) : article ? (
+          <div class="blog-prose">
+            <h2>FIXTURE_FIRST_HEADING</h2>
+            <p>FIXTURE_PARAGRAPH <code>FIXTURE_INLINE_CODE</code> FIXTURE_PARAGRAPH_END.</p>
+            <blockquote><p>FIXTURE_QUOTE_SINGLE</p></blockquote>
+            {fixtureParagraphs.map(index => <><h2>FIXTURE_SECTION_{index}</h2><p>FIXTURE_READING_PARAGRAPH_{index}. Synthetic typography specimen, not publishable article content.</p></>)}
+          </div>
+        ) : (
+          <section aria-label="Fixture blog entries">
+            <p class="blog-meta"><time datetime="2001-01-01">January 1, 2001</time></p>
+            <h2>Article typography specimen</h2>
+            <p>Synthetic layout specimen. Not publishable article content.</p>
+            <p class="blog-meta">By Fixture author</p>
+            {fixtureParagraphs.map(index => <><h2>FIXTURE_ENTRY_{index}</h2><p>FIXTURE_SUMMARY_{index}. Synthetic layout specimen.</p></>)}
+          </section>
+        )}
+      </ReadingPanel>
+    </MarketingPage>
+  </main>
+</div>
+
+<style>
+  .marketing-canvas-main { padding: 0; }
+</style>

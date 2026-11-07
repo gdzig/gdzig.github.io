@@ -1,22 +1,36 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import MarketingPage from '../../components/marketing/MarketingPage.astro';
+import PageIntro from '../../components/marketing/PageIntro.astro';
+import ReadingPanel from '../../components/marketing/ReadingPanel.astro';
+import PostSummary from '../../components/marketing/PostSummary.astro';
+import { indexMetadata } from '../../lib/blog/metadata';
+import { getBlogPosts, publicationContext } from '../../lib/blog/posts';
+import '../../styles/blog.css';
 
+if (!Astro.site) throw new Error('Blog pages require a configured Astro.site.');
+const head = indexMetadata(Astro.site);
+const posts = await getBlogPosts();
+const context = publicationContext();
 const repositoryUrl = 'https://github.com/gdzig/gdzig';
 ---
 
-<SiteLayout
-  title="Blog — Planned | GDZig"
-  description="Release notes and project updates for GDZig will live here."
->
-  <section class="hero stub-page" aria-labelledby="blog-title">
-    <p class="eyebrow">Project updates</p>
-    <h1 id="blog-title">Blog — Planned</h1>
-    <p>
-      Release notes and project updates will live here. Until then, follow the
-      repository for current changes.
-    </p>
-    <div class="actions" aria-label="Blog actions">
-      <a href={repositoryUrl} role="button">Follow the repository</a>
-    </div>
-  </section>
+<SiteLayout title={head.title} description={head.description} head={head}>
+  <MarketingPage background="pattern">
+    <PageIntro slot="intro" id="blog-title" title="Blog" />
+    <ReadingPanel>
+      <section class="blog-index" aria-labelledby="blog-title">
+        {posts.length === 0 ? (
+          <>
+            <p>No posts published yet.</p>
+            <p><a href={repositoryUrl}>Follow the repository</a> for current changes.</p>
+          </>
+        ) : (
+          <ol class="blog-list">
+            {posts.map(post => <PostSummary post={post} now={context.now} />)}
+          </ol>
+        )}
+      </section>
+    </ReadingPanel>
+  </MarketingPage>
 </SiteLayout>

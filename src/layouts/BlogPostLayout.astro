@@ -1,0 +1,53 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SiteLayout from './SiteLayout.astro';
+import MarketingPage from '../components/marketing/MarketingPage.astro';
+import PageIntro from '../components/marketing/PageIntro.astro';
+import ReadingPanel from '../components/marketing/ReadingPanel.astro';
+import AuthorNotice from '../components/marketing/AuthorNotice.astro';
+import { postMetadata } from '../lib/blog/metadata';
+import { publicationContext } from '../lib/blog/posts';
+import { formatDate, isPublished } from '../lib/blog/policy';
+import '../styles/blog.css';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+if (!Astro.site) throw new Error('Blog pages require a configured Astro.site.');
+const context = publicationContext();
+const head = postMetadata(post, Astro.site, context);
+const { title, author, authorNotice, publishedAt, updatedAt, tags, cover, source } = post.data;
+---
+
+<SiteLayout title={head.title} description={head.description} head={head}>
+  <MarketingPage background="pattern">
+    <article class="blog-post">
+      <PageIntro id="post-title" title={title} variant="article">
+        <Fragment slot="before-title">
+          {!isPublished(post, context.now) && <p class="blog-preview">Unpublished preview</p>}
+          {publishedAt && <p class="blog-meta"><time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time></p>}
+        </Fragment>
+        <p class="blog-meta">
+          By {author.url ? <a href={author.url} rel="author">{author.name}</a> : author.name}
+        </p>
+        {updatedAt && <p class="blog-meta">Updated <time datetime={updatedAt.toISOString()}>{formatDate(updatedAt)}</time></p>}
+        {tags.length > 0 && <ul class="blog-tags" aria-label="Tags">{tags.map(tag => <li>{tag}</li>)}</ul>}
+      </PageIntro>
+      <ReadingPanel>
+        {cover && <img class="blog-cover" src={cover.src} alt={cover.alt} loading="eager" />}
+        {authorNotice && <AuthorNotice author={author} {...authorNotice} source={source} />}
+        <div class="blog-prose"><slot /></div>
+        {source && (
+          <footer class="blog-source-footer">
+            <hr />
+            <p>Original source: <a href={source.url}>{source.url}</a></p>
+            {source.publishedAt && <p class="blog-meta">Originally published <time datetime={source.publishedAt.toISOString()}>{formatDate(source.publishedAt)}</time></p>}
+            {publishedAt && <p class="blog-meta">Published on GDZig <time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time></p>}
+          </footer>
+        )}
+      </ReadingPanel>
+    </article>
+  </MarketingPage>
+</SiteLayout>

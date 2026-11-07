@@ -79,6 +79,7 @@ beforeAll(() => {
   const result = spawnSync('bun', ['run', 'build'], {
     cwd: siteDirectory,
     encoding: 'utf8',
+    env: { ...process.env, NODE_ENV: 'production' },
   });
 
   if (result.status !== 0) {
@@ -187,14 +188,46 @@ describe('static site artifact', () => {
     }
   }, 180_000);
 
-  test('contains the Blog placeholder page', async () => {
+  test('keeps wide blog tables readable inside a local scroll container', async () => {
+    const html = await readFile(join(outputDirectory, 'blog', 'index.html'), 'utf8');
+    const css = [
+      await readLinkedCss(html),
+      ...[...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map(([, body]) => body),
+    ].join('\n');
+    const tableRule = css.match(/\.pico \.blog-prose table\{([^}]*)\}/)?.[1] ?? '';
+
+    expect(tableRule).toContain('max-width:100%');
+    expect(tableRule).toContain('overflow-x:auto');
+    expect(tableRule).toContain('overflow-wrap:normal');
+  });
+
+  test('contains the collection-backed Blog page with Clay’s published article', async () => {
     const html = await readFile(join(outputDirectory, 'blog', 'index.html'), 'utf8');
 
-    expect(html).toContain('Blog — Planned');
-    expect(html).toContain('Release notes and project updates will live here.');
-    expect(html).toContain('Follow the repository');
+    expect(html).toContain('<title>Blog | GDZig</title>');
+    expect(html).not.toContain('No posts published yet.');
+    expect(html).toContain('href="/blog/godot-video-extensions-in-zig/"');
+    expect(html).toContain('From godot-cpp to Zig');
+    expect(html).toContain('November 7, 2026');
+    expect(html).toContain('rel="canonical" href="https://gdzig.github.io/blog/"');
+    expect(html).toContain('property="og:image" content="https://gdzig.github.io/og/blog.png"');
     expect(html).toContain('href="https://github.com/gdzig/gdzig"');
     expectTopLevelNavigation(html);
+  });
+
+
+  test('publishes Clay’s article with separate GDZig and original dates and contributor credit', async () => {
+    const html = await readFile(join(outputDirectory, 'blog', 'godot-video-extensions-in-zig', 'index.html'), 'utf8');
+
+    expect(html).not.toContain('Unpublished preview');
+    expect(html).not.toContain('noindex');
+    expect(html).toContain('datetime="2026-11-07T00:00:00.000Z">November 7, 2026</time>');
+    expect(html).toContain('datetime="2026-09-26T00:00:00.000Z">September 26, 2026</time>');
+    expect(html).toContain('a GDZig community member and contributor.');
+    expect(html.match(/<hr\b/g) ?? []).toHaveLength(1);
+    expect(html).toMatch(/<footer class="blog-source-footer"[^>]*>\s*<hr\b/);
+    expect(html).toContain('rel="author"');
+    expect((await stat(join(outputDirectory, 'og', 'blog', 'godot-video-extensions-in-zig.png'))).size).toBeGreaterThan(0);
   });
 
 

@@ -3,8 +3,10 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
+  site: 'https://gdzig.github.io/',
   output: 'static',
   trailingSlash: 'always',
+  vite: { define: { __BLOG_BUILD_TIME__: JSON.stringify(new Date().toISOString()) } },
   integrations: [
     starlight({
       title: 'GDZig Docs',
