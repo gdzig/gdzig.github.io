@@ -60,3 +60,25 @@ test('drops unsafe URL schemes and attributes even when encoded or malformed', (
   expect(html).toContain('Unsafe');
   expect(html).toContain('Malformed');
 });
+
+test('balances figcaption and code after suppressing a hidden span', () => {
+  expect(articleFeedHtml('<figcaption><span hidden>hide</span></figcaption><pre><code>x</code></pre>', url))
+    .toBe('<figcaption></figcaption><pre><code>x</code></pre>');
+});
+
+for (const marker of ['hidden', 'aria-hidden="true"', 'class="other copy more"']) {
+  test(`removes nested same-named subtrees without corrupting later tags: ${marker}`, () => {
+    const input = `<div><span ${marker}><span>HIDDEN_LABEL</span><span hidden>HIDDEN_NESTED</span></span><span>visible</span></div><section><code>end</code></section>`;
+    expect(articleFeedHtml(input, url)).toBe('<div><span>visible</span></div><section><code>end</code></section>');
+  });
+}
+
+test('suppresses hidden code text before line normalization loses its marker', () => {
+  const input = '<pre><code><div class="ec-line"><div class="code">visible<span hidden>HIDDEN_LABEL</span></div></div></code></pre>';
+  expect(articleFeedHtml(input, url)).toBe('<pre><code>visible</code></pre>');
+});
+
+test('retains visible same-named wrappers after removing multiple hidden siblings', () => {
+  const input = '<div><div hidden>HIDDEN_ONE</div><div aria-hidden="true">HIDDEN_TWO</div><div class="copy"><div>HIDDEN_THREE</div></div></div><div><div>visible</div></div>';
+  expect(articleFeedHtml(input, url)).toBe('<div></div><div><div>visible</div></div>');
+});

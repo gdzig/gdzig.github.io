@@ -5,6 +5,11 @@ import sanitizeHtml from 'sanitize-html';
 /** Convert rendered article markup into a standalone reader fragment. */
 export function articleFeedHtml(html: string, articleUrl: URL): string {
   const document = parseDocument(html);
+  // Remove hidden UI before code flattening and sanitization, without renaming tags.
+  for (const element of DomUtils.findAll(element =>
+    'hidden' in element.attribs || element.attribs['aria-hidden'] === 'true' || (element.attribs.class?.split(/\s+/).includes('copy') ?? false), document.children)) {
+    DomUtils.removeElement(element);
+  }
   for (const code of DomUtils.findAll(element => element.name === 'code', document.children)) {
     const lines = DomUtils.findAll(element => element.attribs.class?.split(/\s+/).includes('ec-line') ?? false, code.children);
     if (!lines.length) continue;
@@ -39,9 +44,6 @@ export function articleFeedHtml(html: string, articleUrl: URL): string {
     nonTextTags: ['script', 'style', 'textarea', 'option', 'noscript', 'template', 'button', 'form', 'select', 'iframe', 'object', 'svg', 'feed-omit'],
     transformTags: {
       '*': (tagName, attribs) => {
-        if ('hidden' in attribs || attribs['aria-hidden'] === 'true' || attribs.class?.split(/\s+/).includes('copy')) {
-          return { tagName: 'feed-omit', attribs: {} };
-        }
         for (const attribute of ['href', 'src', 'poster']) {
           if (attribs[attribute] !== undefined) {
             try { attribs[attribute] = new URL(attribs[attribute], articleUrl).href; }
