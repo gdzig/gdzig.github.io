@@ -1,0 +1,49 @@
+---
+import { formatDate } from '../../lib/blog/policy';
+
+interface Props {
+  author: {
+    name: string;
+    url?: string;
+  };
+  guest?: boolean;
+  roles?: ReadonlyArray<'community member' | 'contributor' | 'maintainer' | 'founder'>;
+  source?: {
+    url: string;
+    publishedAt?: Date;
+  };
+}
+
+const { author, guest = false, roles = [], source } = Astro.props;
+const roleText = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' }).format(roles);
+---
+
+<aside class="author-notice" aria-label="About the author">
+  <p>{guest ? 'This is a guest post by' : 'This post is by'} {author.url ? <a href={author.url} rel="author"><strong>{author.name}</strong></a> : <strong>{author.name}</strong>}{roleText && `, a GDZig ${roleText}`}.</p>
+  {source?.url && (
+    <p>This post was originally published at <a href={source.url}>{source.url}</a>{source.publishedAt && <> on <time datetime={source.publishedAt.toISOString()}>{formatDate(source.publishedAt)}</time></>}.</p>
+  )}
+</aside>
+
+<style>
+  .author-notice {
+    min-width: 0;
+    margin-block: 0 1.5rem;
+    padding: .25rem 0 .25rem 1rem;
+    border-inline-start: 3px solid var(--gdzig-accent-background);
+    color: var(--gdzig-muted);
+    font-size: .9rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  .author-notice p {
+    margin: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .author-notice p + p {
+    margin-block-start: .5rem;
+  }
+</style>
