@@ -20,22 +20,9 @@
   border: 0;
 }
 
-.pico .blog-meta,
-.pico .blog-tags {
+.pico .blog-meta {
   color: var(--gdzig-muted);
   font-size: .9rem;
-}
-
-.pico .blog-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem 1rem;
-  padding: 0;
-  list-style: none;
-}
-
-.pico .blog-tags > li {
-  list-style: none;
 }
 
 .pico .blog-post hr {

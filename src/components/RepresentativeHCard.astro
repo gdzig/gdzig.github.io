@@ -1,0 +1,14 @@
+---
+const site = Astro.site!;
+
+const name = 'GDZig';
+const note = 'GDZig provides idiomatic Zig bindings for Godot 4.';
+const homeUrl = new URL('/', site).href;
+const avatarUrl = new URL('/gdzig-logo.png', site).href;
+---
+
+<div class="h-card" hidden>
+  <a class="p-name u-url" href={homeUrl}>{name}</a>
+  <img class="u-photo" src={avatarUrl} alt="GDZig logo" width="512" height="512" />
+  <p class="p-note">{note}</p>
+</div>

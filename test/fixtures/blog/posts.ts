@@ -14,6 +14,7 @@ export function post(fields: Record<string, unknown> = {}, body = 'FIXTURE_MARKD
 
 export const fixtures = [
   { id: 'old', extension: 'md', fields: { title: 'FIXTURE_OLD', publishedAt: '2000-01-01', cover: { src: '/images/fixture.png', alt: 'FIXTURE_COVER_ONLY' } } },
+  { id: 'covered', extension: 'md', fields: { title: 'FIXTURE_COVERED', publishedAt: '1999-12-01', tags: ['Fixture Cover Zig', 'Fixture Cover Godot'], cover: { src: '/images/fixture.png', alt: 'FIXTURE_COVER_AND_TAGS' } } },
   { id: 'nested/new', extension: 'mdx', fields: { title: 'FIXTURE_NESTED', publishedAt: '2002-01-01', updatedAt: '2002-02-03', author: { name: 'Fixture guest', url: 'https://example.invalid/guest' }, tags: ['Fixture Zig', 'Fixture Godot'], section: 'Fixture section' }, body: 'FIXTURE_MARKDOWN_BODY\n\n<span data-mdx-fixture>{1 + 1}</span>' },
   { id: 'syndicated', extension: 'md', fields: { title: 'FIXTURE_SYNDICATED', author: { name: 'Fixture original author', url: 'https://example.invalid/original-author' }, source: { url: 'https://example.invalid/original/', publishedAt: '1999-01-01' } } },
   { id: 'override', extension: 'md', fields: { title: 'FIXTURE_OVERRIDE', ogImage: image } },

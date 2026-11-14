@@ -180,6 +180,13 @@
   font-size: 0.9rem;
 }
 
+.landing-footer-navs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
 .landing-footer nav {
   width: auto;
 }

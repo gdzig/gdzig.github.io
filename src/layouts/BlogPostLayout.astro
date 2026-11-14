@@ -18,7 +18,7 @@ const { post } = Astro.props;
 if (!Astro.site) throw new Error('Blog pages require a configured Astro.site.');
 const context = publicationContext();
 const head = postMetadata(post, Astro.site, context);
-const { title, author, authorNotice, publishedAt, updatedAt, tags, cover, source } = post.data;
+const { title, author, authorNotice, publishedAt, updatedAt, cover, source } = post.data;
 ---
 
 <SiteLayout title={head.title} description={head.description} head={head}>
@@ -33,7 +33,6 @@ const { title, author, authorNotice, publishedAt, updatedAt, tags, cover, source
           By {author.url ? <a href={author.url} rel="author">{author.name}</a> : author.name}
         </p>
         {updatedAt && <p class="blog-meta">Updated <time datetime={updatedAt.toISOString()}>{formatDate(updatedAt)}</time></p>}
-        {tags.length > 0 && <ul class="blog-tags" aria-label="Tags">{tags.map(tag => <li>{tag}</li>)}</ul>}
       </PageIntro>
       <ReadingPanel>
         {cover && <img class="blog-cover" src={cover.src} alt={cover.alt} loading="eager" />}

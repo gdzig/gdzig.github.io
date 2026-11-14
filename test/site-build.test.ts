@@ -6,6 +6,7 @@ import { runInNewContext } from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import sharp from 'sharp';
+import { parseFeed } from './helpers/feeds';
 
 const testDirectory = dirname(fileURLToPath(import.meta.url));
 const siteDirectory = join(testDirectory, '..');
@@ -17,6 +18,12 @@ const generatedApiDocsHrefs = [
   'href="https://gdzig.github.io/casez/"',
   'href="https://gdzig.github.io/oopz/"',
 ];
+const mastodonFollowUrl = 'https://fed.brid.gy/web/gdzig.github.io/followers';
+const mastodonFollowTitle = 'Follow @gdzig.github.io@web.brid.gy from Mastodon or any fediverse server';
+const blueskyProfileUrl = 'https://bsky.app/profile/gdzig.github.io.web.brid.gy';
+const bridgyVerificationUrl = 'https://web.brid.gy/r/https://gdzig.github.io/';
+
+
 async function readLinkedCss(html: string) {
   const stylesheetPaths = [...html.matchAll(/href="(\/_astro\/[^\"]+\.css)"/g)].map(
     ([, path]) => path,
@@ -134,6 +141,72 @@ async function readDocumentHead(path: string): Promise<DocumentHead> {
     .text();
 
   return { html, canonicals, metas };
+}
+
+async function readRepresentativeHCard(html: string) {
+  let hidden = false;
+  let name = '';
+  let url: string | null = null;
+  let photo: { src: string | null; alt: string | null; width: string | null; height: string | null } | null = null;
+  let note = '';
+
+  await new HTMLRewriter()
+    .on('div.h-card', {
+      element(element) {
+        hidden = element.getAttribute('hidden') !== null;
+      },
+    })
+    .on('.h-card .p-name', { text(chunk) { name += chunk.text; } })
+    .on('.h-card .u-url', { element(element) { url = element.getAttribute('href'); } })
+    .on('.h-card .u-photo', {
+      element(element) {
+        photo = {
+          src: element.getAttribute('src'),
+          alt: element.getAttribute('alt'),
+          width: element.getAttribute('width'),
+          height: element.getAttribute('height'),
+        };
+      },
+    })
+    .on('.h-card .p-note', { text(chunk) { note += chunk.text; } })
+    .transform(new Response(html))
+    .text();
+
+  return { hidden, name: name.trim(), url, photo, note: note.trim() };
+}
+
+interface FooterFollowLink {
+  href: string;
+  label: string;
+  title: string;
+  rel: string;
+  hidden: boolean;
+}
+
+async function readFooterFollowLinks(html: string) {
+  const links: FooterFollowLink[] = [];
+  let current: FooterFollowLink | undefined;
+
+  await new HTMLRewriter()
+    .on('footer nav[aria-label="Follow GDZig"] a', {
+      element(element) {
+        current = {
+          href: element.getAttribute('href') ?? '',
+          label: '',
+          title: element.getAttribute('title') ?? '',
+          rel: element.getAttribute('rel') ?? '',
+          hidden: element.hasAttribute('hidden'),
+        };
+        links.push(current);
+      },
+      text(text) {
+        current!.label += text.text;
+      },
+    })
+    .transform(new Response(html))
+    .text();
+
+  return links.map(link => ({ ...link, label: link.label.trim() }));
 }
 
 beforeAll(() => {
@@ -435,11 +508,24 @@ describe('static site artifact', () => {
   });
 });
 
-describe('marketing metadata', () => {
-  test('home page exposes one canonical and marketing metadata', async () => {
+describe('bridged profile and marketing metadata', () => {
+  test('home page exposes one canonical and a representative h-card for Bridgy', async () => {
     const { html, canonicals, metas } = await readDocumentHead('index.html');
+    const card = await readRepresentativeHCard(html);
 
     expect(canonicals).toEqual(['https://gdzig.github.io/']);
+    expect(card).toEqual({
+      hidden: true,
+      name: 'GDZig',
+      url: 'https://gdzig.github.io/',
+      photo: {
+        src: 'https://gdzig.github.io/gdzig-logo.png',
+        alt: 'GDZig logo',
+        width: '512',
+        height: '512',
+      },
+      note: 'GDZig provides idiomatic Zig bindings for Godot 4.',
+    });
     expect(metas.filter((meta) => meta.property === 'og:title')).toHaveLength(1);
     for (const [property, content] of Object.entries({
       'og:type': 'website',
@@ -455,13 +541,13 @@ describe('marketing metadata', () => {
     expect(metas).toContainEqual({ property: null, name: 'twitter:card', content: 'summary_large_image' });
   });
 
-  test('emits the logo PNG and home card at their advertised sizes', async () => {
-    const [logo, home] = await Promise.all([
+  test('emits the avatar and home card at their advertised sizes', async () => {
+    const [avatar, home] = await Promise.all([
       sharp(join(outputDirectory, 'gdzig-logo.png')).metadata(),
       sharp(join(outputDirectory, 'og', 'home.png')).metadata(),
     ]);
 
-    expect(logo).toMatchObject({ format: 'png', width: 512, height: 512 });
+    expect(avatar).toMatchObject({ format: 'png', width: 512, height: 512 });
     expect(home).toMatchObject({ format: 'png', width: 1200, height: 630 });
   });
 
@@ -481,6 +567,73 @@ describe('marketing metadata', () => {
       name: null,
       content: 'https://gdzig.github.io/og/home.png',
     });
+  });
+});
+
+describe('blog feed categories', () => {
+  const postUrl = 'https://gdzig.github.io/blog/godot-video-extensions-in-zig/';
+  const tags = ['zig', 'godot', 'gdextension', 'video', 'gdzig'];
+
+  test('publishes the real post categories in RSS', async () => {
+    const body = await readFile(join(outputDirectory, 'rss.xml'), 'utf8');
+    const entry = parseFeed(body, 'rss').entries.find(entry => entry.id === postUrl);
+
+    expect(entry).toBeDefined();
+    expect(entry!.tags).toEqual(tags);
+    for (const tag of tags) {
+      expect(body).toContain(`<category>${tag}</category>`);
+    }
+  });
+
+  test('keeps the real post tags in head metadata but not in the article body', async () => {
+    const html = await readFile(
+      join(outputDirectory, 'blog', 'godot-video-extensions-in-zig', 'index.html'),
+      'utf8',
+    );
+
+    for (const tag of tags) {
+      expect(html).toContain(`<meta property="article:tag" content="${tag}">`);
+    }
+    expect(html).toContain(`"keywords":${JSON.stringify(tags)}`);
+    expect(html).not.toContain('class="blog-tags"');
+    expect(html).not.toContain('class="blog-cover"');
+  });
+});
+
+describe('bridged identity links', () => {
+  test('links to Mastodon, Bluesky, and RSS from the home page follow nav', async () => {
+    const html = await readFile(join(outputDirectory, 'index.html'), 'utf8');
+    const links = await readFooterFollowLinks(html);
+
+    expect(links.filter(link => !link.hidden).map(({ href, label, title }) => ({ href, label, title }))).toEqual([
+      { href: mastodonFollowUrl, label: 'Mastodon', title: mastodonFollowTitle },
+      { href: blueskyProfileUrl, label: 'Bluesky', title: '' },
+      { href: '/rss.xml', label: 'RSS', title: '' },
+    ]);
+  });
+
+  test('includes the hidden Bridgy rel="me" verification link on the home page', async () => {
+    const html = await readFile(join(outputDirectory, 'index.html'), 'utf8');
+    const links = await readFooterFollowLinks(html);
+
+    expect(links.filter(link => link.hidden)).toEqual([
+      {
+        href: bridgyVerificationUrl,
+        label: 'GDZig on the fediverse',
+        title: '',
+        rel: 'me',
+        hidden: true,
+      },
+    ]);
+  });
+
+  test('shares the social links with the blog index footer', async () => {
+    const html = await readFile(join(outputDirectory, 'blog', 'index.html'), 'utf8');
+    const links = await readFooterFollowLinks(html);
+
+    for (const href of [mastodonFollowUrl, blueskyProfileUrl]) {
+      expect(links.some(link => link.href === href && !link.hidden)).toBe(true);
+    }
   });
 });
 

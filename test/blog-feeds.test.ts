@@ -7,7 +7,7 @@ import { escapingTitle, post, writeFixtures } from './fixtures/blog/posts';
 import { articleSummary, literalCode, writeArticleFixtures } from './fixtures/blog/full-articles';
 
 const origin = 'https://gdzig.github.io';
-const ids = ['nested/new', 'escaping', 'override', 'syndicated', 'old'];
+const ids = ['nested/new', 'escaping', 'override', 'syndicated', 'old', 'covered'];
 const urls = ids.map(id => `${origin}/blog/${id}/`);
 const get = (url: string) => fetch(url, { signal: AbortSignal.timeout(30_000) });
 
@@ -130,6 +130,24 @@ test('serves matching public RSS, Atom and JSON feeds in production and developm
           expect(credit.elements).toContainEqual({ tag: 'a', href: 'https://example.invalid/original/' });
           const title = format.id === 'atom' ? (await inspectHtml(feed.entries[1].title)).text : feed.entries[1].title;
           expect(title).toBe(escapingTitle);
+          const covered = feed.entries.find(entry => entry.id === `${origin}/blog/covered/`)!;
+          const coveredLabel = `${mode} ${format.id} covered`;
+          // Each format exposes the same categories, and the bridge maps them
+          // to its own shape: RSS <category>, Atom term, JSON tags.
+          expect(covered.tags, coveredLabel).toEqual(['Fixture Cover Zig', 'Fixture Cover Godot']);
+          if (format.id === 'rss') {
+            expect(body, coveredLabel).toContain('<category>Fixture Cover Zig</category>');
+          } else if (format.id === 'atom') {
+            expect(body, coveredLabel).toMatch(/<category\b[^>]*\bterm="Fixture Cover Zig"/);
+          }
+          const coveredImages: { src: string | null; alt: string | null }[] = [];
+          await new HTMLRewriter().on('img', { element(element) {
+            coveredImages.push({ src: element.getAttribute('src'), alt: element.getAttribute('alt') });
+          } }).transform(new Response(covered.content)).text();
+          expect(coveredImages, coveredLabel).toEqual([
+            { src: `${origin}/images/fixture.png`, alt: 'FIXTURE_COVER_AND_TAGS' },
+          ]);
+          expect(covered.content.match(/<img\b/g), coveredLabel).toHaveLength(1);
         }
       } finally { await server.stop(); }
     }

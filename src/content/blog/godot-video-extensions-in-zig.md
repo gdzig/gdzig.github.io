@@ -6,6 +6,12 @@ author:
   url: "https://tercek.me/"
 draft: false
 publishedAt: "2026-11-07"
+tags:
+  - zig
+  - godot
+  - gdextension
+  - video
+  - gdzig
 authorNotice:
   guest: true
   roles:
