@@ -11,6 +11,8 @@ export default defineConfig({
     starlight({
       title: 'GDZig Docs',
       description: 'Human-written guides for building Godot extensions with Zig.',
+      favicon: '/gdzig-logo.png',
+      logo: { src: './src/assets/gdzig-logo.svg', alt: 'GDZig' },
       customCss: ['./src/styles/starlight.css'],
       components: {
         Head: './src/components/StarlightHead.astro',

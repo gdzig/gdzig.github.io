@@ -6,6 +6,8 @@ import SiteHeader from '../components/marketing/SiteHeader.astro';
 import SiteFooter from '../components/marketing/SiteFooter.astro';
 import { initializeTheme } from '../components/marketing/theme.js';
 import type { BlogHeadData } from '../lib/blog/metadata';
+import { headMetadata } from '../lib/blog/metadata';
+import { logoUrl } from '../lib/brand/logo';
 import '@picocss/pico/css/pico.conditional.min.css';
 import '../styles/home.css';
 import '../styles/landing.css';
@@ -20,6 +22,25 @@ interface Props {
 
 const { title, description, variant = 'default', head } = Astro.props;
 const isLanding = variant === 'landing';
+
+let resolvedHead = head;
+if (!resolvedHead) {
+  const site = Astro.site!;
+  resolvedHead = headMetadata({
+    title,
+    description,
+    canonical: new URL(Astro.url.pathname, site).href,
+    image: {
+      src: new URL('/og/home.png', site).href,
+      alt: 'GDZig: Idiomatic Zig bindings for Godot 4',
+      width: 1200,
+      height: 630,
+      type: 'image/png',
+    },
+    type: 'website',
+    documentTitle: title,
+  });
+}
 ---
 
 <html lang="en">
@@ -27,7 +48,10 @@ const isLanding = variant === 'landing';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    {head && <BlogHead data={head} />}
+    <link rel="icon" type="image/svg+xml" href={logoUrl} />
+    <link rel="icon" type="image/png" sizes="512x512" href="/gdzig-logo.png" />
+    <link rel="apple-touch-icon" href="/gdzig-logo.png" />
+    {resolvedHead && <BlogHead data={resolvedHead} />}
     <FeedLinks />
     <PostHog />
     <script is:inline set:html={`(${initializeTheme.toString()})();`} />

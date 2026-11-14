@@ -1,4 +1,6 @@
 ---
+import { logoUrl } from '../../lib/brand/logo';
+
 interface Props {
   overlay?: boolean;
 }
@@ -17,7 +19,12 @@ const primaryLinks = [
   <header class:list={['container', 'site-header', { 'site-header-overlay': overlay }]}>
     <nav class="site-nav" aria-label="Primary">
       <ul class="brand-links">
-        <li><a class="wordmark" href="/" aria-label="GDZig home">GDZig</a></li>
+        <li>
+          <a class="wordmark" href="/" aria-label="GDZig home">
+            <img class="wordmark-logo" src={logoUrl} alt="" width="20" height="20" />
+            GDZig
+          </a>
+        </li>
       </ul>
       <ul class="primary-links">
         {primaryLinks.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
