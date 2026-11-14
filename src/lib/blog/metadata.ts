@@ -10,11 +10,27 @@ export type BlogHeadData = {
   jsonLd?: Record<string, unknown>;
 };
 
-function common(title: string, description: string, canonical: string, image: ShareImage, type: 'article' | 'website'): BlogHeadData {
+type HeadMetadataInput = {
+  title: string,
+  description: string,
+  canonical: string,
+  image: ShareImage,
+  type: 'article' | 'website',
+  documentTitle?: string,
+};
+
+export function headMetadata({
+  title,
+  description,
+  canonical,
+  image,
+  type,
+  documentTitle = `${title} | GDZig`,
+}: HeadMetadataInput): BlogHeadData {
   const property = (property: string, content: string): HeadMeta => ({ property, content });
   const name = (name: string, content: string): HeadMeta => ({ name, content });
   return {
-    title: `${title} | GDZig`, description, canonical,
+    title: documentTitle, description, canonical,
     meta: [
       property('og:title', title), property('og:description', description),
       property('og:site_name', 'GDZig'), property('og:locale', 'en_US'),
@@ -36,7 +52,13 @@ export function postMetadata(post: BlogPost, site: URL, context: PublicationCont
     : { src: new URL(postCardPath(post.id), site).href, alt: `GDZig: ${data.title}`, width: 1200, height: 630, type: 'image/png' };
   const canonical = data.source?.url ?? new URL(postPath(post.id), site).href;
   const publishedAt = data.source?.publishedAt ?? data.publishedAt;
-  const head = common(data.title, data.description, canonical, image, 'article');
+  const head = headMetadata({
+    title: data.title,
+    description: data.description,
+    canonical,
+    image,
+    type: 'article',
+  });
   head.meta.push({ name: 'author', content: data.author.name });
   if (data.author.url) head.meta.push({ property: 'article:author', content: data.author.url });
   for (const tag of data.tags) head.meta.push({ property: 'article:tag', content: tag });
@@ -62,9 +84,19 @@ export function postMetadata(post: BlogPost, site: URL, context: PublicationCont
 }
 
 export function indexMetadata(site: URL): BlogHeadData {
-  return common('Blog', 'Release notes and project updates for GDZig.', new URL('/blog/', site).href, {
-    src: new URL('/og/blog.png', site).href, alt: 'GDZig blog', width: 1200, height: 630, type: 'image/png',
-  }, 'website');
+  return headMetadata({
+    title: 'Blog',
+    description: 'Release notes and project updates for GDZig.',
+    canonical: new URL('/blog/', site).href,
+    image: {
+      src: new URL('/og/blog.png', site).href,
+      alt: 'GDZig blog',
+      width: 1200,
+      height: 630,
+      type: 'image/png',
+    },
+    type: 'website',
+  });
 }
 
 export function safeJsonLd(value: unknown): string {

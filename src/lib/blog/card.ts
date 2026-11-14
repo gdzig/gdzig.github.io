@@ -52,3 +52,9 @@ export async function renderCard(input: CardInput): Promise<Buffer> {
   const svg = await satori(buildCardTree(input), { width: 1200, height: 630, fonts });
   return sharp(Buffer.from(svg)).png().toBuffer();
 }
+
+export async function renderCardResponse(input: CardInput): Promise<Response> {
+  return new Response(new Uint8Array(await renderCard(input)), {
+    headers: { 'Content-Type': 'image/png' },
+  });
+}

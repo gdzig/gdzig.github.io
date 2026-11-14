@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getBlogPosts } from '../../../lib/blog/posts';
 import { formatDate } from '../../../lib/blog/policy';
-import { renderCard } from '../../../lib/blog/card';
+import { renderCardResponse } from '../../../lib/blog/card';
 
 export async function getStaticPaths() {
   return (await getBlogPosts()).filter(post => !post.data.ogImage).map(post => ({
@@ -14,7 +14,4 @@ export async function getStaticPaths() {
   }));
 }
 
-export const GET: APIRoute = async ({ props }) => new Response(
-  new Uint8Array(await renderCard(props.input)),
-  { headers: { 'Content-Type': 'image/png' } },
-);
+export const GET: APIRoute = async ({ props }) => renderCardResponse(props.input);

@@ -109,10 +109,6 @@
   letter-spacing: 0.02em;
 }
 
-.pico.home-page .site-header-overlay .wordmark::before {
-  border-color: var(--landing-header-border);
-}
-
 .pico.home-page .site-header-overlay .theme-toggle {
   color: var(--landing-on-dark);
   border-color: var(--landing-toggle-border);

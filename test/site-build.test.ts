@@ -1,10 +1,11 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readdir, readFile, rm, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { runInNewContext } from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import sharp from 'sharp';
 
 const testDirectory = dirname(fileURLToPath(import.meta.url));
 const siteDirectory = join(testDirectory, '..');
@@ -16,8 +17,6 @@ const generatedApiDocsHrefs = [
   'href="https://gdzig.github.io/casez/"',
   'href="https://gdzig.github.io/oopz/"',
 ];
-
-
 async function readLinkedCss(html: string) {
   const stylesheetPaths = [...html.matchAll(/href="(\/_astro\/[^\"]+\.css)"/g)].map(
     ([, path]) => path,
@@ -75,6 +74,68 @@ function expectDesktopMobileMenuHidden(css: string) {
   expect(visibleMobileRuleIndex).toBeGreaterThan(mobileMediaIndex);
 }
 
+type DocumentHead = {
+  html: string;
+  canonicals: string[];
+  metas: { property: string | null; name: string | null; content: string | null }[];
+};
+
+type IconLink = {
+  rel: string | null;
+  href: string | null;
+  type: string | null;
+  sizes: string | null;
+};
+
+async function readIconLinks(path: string): Promise<IconLink[]> {
+  const html = await readFile(join(outputDirectory, path), 'utf8');
+  const links: IconLink[] = [];
+
+  await new HTMLRewriter()
+    .on('head link[rel]', {
+      element(element) {
+        const rel = element.getAttribute('rel') ?? '';
+        if (!/(^|\s)(shortcut\s+)?icon(\s|$)/.test(rel)) return;
+        links.push({
+          rel,
+          href: element.getAttribute('href'),
+          type: element.getAttribute('type'),
+          sizes: element.getAttribute('sizes'),
+        });
+      },
+    })
+    .transform(new Response(html))
+    .text();
+
+  return links;
+}
+
+async function readDocumentHead(path: string): Promise<DocumentHead> {
+  const html = await readFile(join(outputDirectory, path), 'utf8');
+  const canonicals: string[] = [];
+  const metas: DocumentHead['metas'] = [];
+
+  await new HTMLRewriter()
+    .on('head link[rel="canonical"]', {
+      element(element) {
+        canonicals.push(element.getAttribute('href') ?? '');
+      },
+    })
+    .on('head meta', {
+      element(element) {
+        metas.push({
+          property: element.getAttribute('property'),
+          name: element.getAttribute('name'),
+          content: element.getAttribute('content'),
+        });
+      },
+    })
+    .transform(new Response(html))
+    .text();
+
+  return { html, canonicals, metas };
+}
+
 beforeAll(() => {
   const result = spawnSync('bun', ['run', 'build'], {
     cwd: siteDirectory,
@@ -96,7 +157,7 @@ describe('static site artifact', () => {
     'blog/godot-video-extensions-in-zig/index.html',
     'showcase/index.html',
     'docs/index.html',
-  ])('advertises all three blog feeds only in the head of %s', async (path) => {
+  ])('advertises all three blog feeds in the head and only RSS in the marketing footer of %s', async (path) => {
     const html = await readFile(join(outputDirectory, path), 'utf8');
     const feeds: { href: string | null; type: string | null; title: string | null }[] = [];
     const visibleFeedLinks: string[] = [];
@@ -125,7 +186,7 @@ describe('static site artifact', () => {
       { href: 'https://gdzig.github.io/atom.xml', type: 'application/atom+xml', title: 'GDZig Blog Atom Feed' },
       { href: 'https://gdzig.github.io/feed.json', type: 'application/feed+json', title: 'GDZig Blog JSON Feed' },
     ]);
-    expect(visibleFeedLinks).toEqual([]);
+    expect(visibleFeedLinks).toEqual(path === 'docs/index.html' ? [] : ['/rss.xml']);
   });
 
   test('contains the Astro landing page', async () => {
@@ -371,5 +432,134 @@ describe('static site artifact', () => {
     expectDocsTopLevelLinks(html);
     expect(html).not.toContain('class="pico');
     expect(css).not.toContain('--pico-font-family');
+  });
+});
+
+describe('marketing metadata', () => {
+  test('home page exposes one canonical and marketing metadata', async () => {
+    const { html, canonicals, metas } = await readDocumentHead('index.html');
+
+    expect(canonicals).toEqual(['https://gdzig.github.io/']);
+    expect(metas.filter((meta) => meta.property === 'og:title')).toHaveLength(1);
+    for (const [property, content] of Object.entries({
+      'og:type': 'website',
+      'og:site_name': 'GDZig',
+      'og:url': 'https://gdzig.github.io/',
+      'og:image': 'https://gdzig.github.io/og/home.png',
+      'og:image:width': '1200',
+      'og:image:height': '630',
+      'og:image:type': 'image/png',
+    })) {
+      expect(metas).toContainEqual({ property, name: null, content });
+    }
+    expect(metas).toContainEqual({ property: null, name: 'twitter:card', content: 'summary_large_image' });
+  });
+
+  test('emits the logo PNG and home card at their advertised sizes', async () => {
+    const [logo, home] = await Promise.all([
+      sharp(join(outputDirectory, 'gdzig-logo.png')).metadata(),
+      sharp(join(outputDirectory, 'og', 'home.png')).metadata(),
+    ]);
+
+    expect(logo).toMatchObject({ format: 'png', width: 512, height: 512 });
+    expect(home).toMatchObject({ format: 'png', width: 1200, height: 630 });
+  });
+
+  test('blog pages keep single metadata and the original guest canonical', async () => {
+    const post = await readDocumentHead(join('blog', 'godot-video-extensions-in-zig', 'index.html'));
+
+    expect(post.canonicals).toEqual(['https://tercek.me/blog/godot-video-extensions-in-zig/']);
+    expect(post.metas.filter((meta) => meta.property === 'og:title')).toHaveLength(1);
+  });
+
+  test('the showcase page gets a canonical and a social image', async () => {
+    const { canonicals, metas } = await readDocumentHead(join('showcase', 'index.html'));
+
+    expect(canonicals).toEqual(['https://gdzig.github.io/showcase/']);
+    expect(metas).toContainEqual({
+      property: 'og:image',
+      name: null,
+      content: 'https://gdzig.github.io/og/home.png',
+    });
+  });
+});
+
+describe('brand logo', () => {
+  test('the home page links the shared GDZig logo as its favicon', async () => {
+    const links = await readIconLinks('index.html');
+    const svg = links.find((link) => link.type === 'image/svg+xml');
+
+    expect(svg?.rel).toBe('icon');
+    expect(svg?.href).toMatch(/^\/_astro\/gdzig-logo\.[A-Za-z0-9_-]+\.svg$/);
+    expect(links).toContainEqual({
+      rel: 'icon',
+      href: '/gdzig-logo.png',
+      type: 'image/png',
+      sizes: '512x512',
+    });
+  });
+
+  test('the docs page uses the PNG favicon', async () => {
+    const links = await readIconLinks(join('docs', 'index.html'));
+
+    expect(links).toContainEqual({
+      rel: 'shortcut icon',
+      href: '/gdzig-logo.png',
+      type: 'image/png',
+      sizes: null,
+    });
+  });
+
+  test('the marketing header shows the logo in the wordmark', async () => {
+    const html = await readFile(join(outputDirectory, 'index.html'), 'utf8');
+    const logos: { classList: string[]; src: string | null; alt: string | null }[] = [];
+
+    await new HTMLRewriter()
+      .on('.wordmark img', {
+        element(element) {
+          logos.push({
+            classList: (element.getAttribute('class') ?? '').split(/\s+/).filter(Boolean),
+            src: element.getAttribute('src'),
+            alt: element.getAttribute('alt'),
+          });
+        },
+      })
+      .transform(new Response(html))
+      .text();
+
+    expect(logos).toHaveLength(1);
+    expect(logos[0]).toMatchObject({ classList: ['wordmark-logo'], alt: '' });
+    expect(logos[0].src).toMatch(/^\/_astro\/gdzig-logo\.[A-Za-z0-9_-]+\.svg$/);
+  });
+
+  test('the docs header shows the Starlight logo image', async () => {
+    const html = await readFile(join(outputDirectory, 'docs', 'index.html'), 'utf8');
+    const logoSources: string[] = [];
+
+    await new HTMLRewriter()
+      .on('.site-title img', {
+        element(element) {
+          logoSources.push(element.getAttribute('src') ?? '');
+        },
+      })
+      .transform(new Response(html))
+      .text();
+
+    expect(logoSources).toHaveLength(1);
+    expect(logoSources[0]).toMatch(/^\/_astro\/gdzig-logo\.[A-Za-z0-9_-]+\.svg$/);
+  });
+
+  test('the home page does not reference the removed favicon.svg', async () => {
+    const html = await readFile(join(outputDirectory, 'index.html'), 'utf8');
+
+    expect(html).not.toContain('href="/favicon.svg"');
+  });
+
+  test('ships one SVG logo asset and no duplicate public copy', async () => {
+    const svgAssets = (await readdir(join(outputDirectory, '_astro')))
+      .filter((file) => /^gdzig-logo\.[A-Za-z0-9_-]+\.svg$/.test(file));
+
+    expect(svgAssets).toHaveLength(1);
+    await expect(stat(join(outputDirectory, 'gdzig-logo.svg'))).rejects.toThrow();
   });
 });
