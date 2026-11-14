@@ -5,6 +5,7 @@ import ActionLink from '../components/marketing/ActionLink.astro';
 const godotVersion = '4.7.2';
 const zigVersion = '0.17.0';
 const exampleUrl = 'https://github.com/gdzig/gdzig/tree/master/example';
+const homeUrl = new URL('/', Astro.site!).href;
 
 const docSections = [
   {
@@ -35,6 +36,11 @@ const docSections = [
   title="GDZig | Idiomatic Zig bindings for Godot 4"
   description="GDZig provides idiomatic Zig bindings for Godot 4."
 >
+  <div class="h-card" hidden>
+    <a class="p-name u-url" href={homeUrl}>GDZig</a>
+    <p class="p-note">#nobridge</p>
+  </div>
+
   <section class="band band-hero" aria-labelledby="hero-title">
     <div class="container hero-content">
       <p class="hero-kicker">Godot extensions in Zig</p>
