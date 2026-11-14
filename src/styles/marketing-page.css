@@ -87,8 +87,7 @@
 }
 
 .pico .page-intro p:not(.eyebrow),
-.pico .page-intro .blog-meta,
-.pico .page-intro .blog-tags {
+.pico .page-intro .blog-meta {
   color: var(--marketing-muted);
 }
 

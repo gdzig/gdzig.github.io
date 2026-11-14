@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import ActionLink from '../components/marketing/ActionLink.astro';
+import RepresentativeHCard from '../components/RepresentativeHCard.astro';
 
 const godotVersion = '4.7.2';
 const zigVersion = '0.17.0';
@@ -35,6 +36,8 @@ const docSections = [
   title="GDZig | Idiomatic Zig bindings for Godot 4"
   description="GDZig provides idiomatic Zig bindings for Godot 4."
 >
+  <RepresentativeHCard />
+
   <section class="band band-hero" aria-labelledby="hero-title">
     <div class="container hero-content">
       <p class="hero-kicker">Godot extensions in Zig</p>

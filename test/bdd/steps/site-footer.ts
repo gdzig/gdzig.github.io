@@ -51,7 +51,7 @@ Then('the footer wraps within the viewport', async ({ page, audit, catalogue }) 
       viewport: innerWidth,
       taglineBottom: tagline.bottom,
       navigationTop: navigation.top,
-      links: [...footer.querySelectorAll('a')].map(link => {
+      links: [...footer.querySelectorAll('a:not([hidden])')].map(link => {
         const box = link.getBoundingClientRect();
         return { left: box.left, right: box.right, width: box.width, height: box.height };
       }),

@@ -3,23 +3,46 @@ const footerLinks = [
   { href: '/blog/', label: 'Blog' },
   { href: '/showcase/', label: 'Showcase' },
   { href: '/docs/', label: 'Docs' },
-  { href: '/rss.xml', label: 'RSS' },
   { href: 'https://github.com/gdzig/gdzig', label: 'GitHub' },
   { href: 'https://discord.gg/GEUZGRGeDj', label: 'Discord' },
+];
+
+const followLinks: { href: string; label: string; title?: string }[] = [
+  {
+    href: 'https://fed.brid.gy/web/gdzig.github.io/followers',
+    label: 'Mastodon',
+    title: 'Follow @gdzig.github.io@web.brid.gy from Mastodon or any fediverse server',
+  },
+  { href: 'https://bsky.app/profile/gdzig.github.io.web.brid.gy', label: 'Bluesky' },
+  { href: '/rss.xml', label: 'RSS' },
 ];
 ---
 
 <footer class="landing-footer">
   <div class="container landing-footer-inner">
     <p>Build Godot games and extensions with Zig.</p>
-    <nav aria-label="Footer">
-      <ul>
-        {footerLinks.map((link) => (
+    <div class="landing-footer-navs">
+      <nav aria-label="Footer">
+        <ul>
+          {footerLinks.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <nav aria-label="Follow GDZig">
+        <ul>
+          {followLinks.map((link) => (
+            <li>
+              <a href={link.href} title={link.title}>{link.label}</a>
+            </li>
+          ))}
           <li>
-            <a href={link.href}>{link.label}</a>
+            <a href="https://web.brid.gy/r/https://gdzig.github.io/" rel="me" hidden>GDZig on the fediverse</a>
           </li>
-        ))}
-      </ul>
-    </nav>
+        </ul>
+      </nav>
+    </div>
   </div>
 </footer>

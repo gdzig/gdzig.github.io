@@ -178,7 +178,7 @@ test('real production publishing, parsed head/JSON-LD, ordered listing and HTTP 
     const index = await parse(await readFile(page(site, ''), 'utf8'));
     expectHead(index, { title: 'Blog', canonical: `${origin}/blog/`, type: 'website', description: 'Release notes and project updates for GDZig.', alt: 'GDZig blog' });
     expect(index.jsonLd).toEqual([]);
-    expect(index.links).toEqual(['/blog/nested/new/', '/blog/escaping/', '/blog/override/', '/blog/syndicated/', '/blog/old/']);
+    expect(index.links).toEqual(['/blog/nested/new/', '/blog/escaping/', '/blog/override/', '/blog/syndicated/', '/blog/old/', '/blog/covered/']);
 
     for (const fixture of fixtures.filter(fixture => !hidden.includes(fixture.id))) {
       const fields = { ...baseFields, ...fixture.fields } as Record<string, any>;
@@ -283,7 +283,7 @@ test('real dev serves unpublished previews with labels, noindex, no JSON-LD or i
         await expectHttpPng(`${server.origin}/og/blog/${id}.png`);
       }
       const listing = await parse(await (await get(`${server.origin}/blog/`)).text());
-      expect(listing.links).toEqual(['/blog/future/', '/blog/nested/new/', '/blog/draft/', '/blog/escaping/', '/blog/override/', '/blog/syndicated/', '/blog/old/', '/blog/implicit/']);
+      expect(listing.links).toEqual(['/blog/future/', '/blog/nested/new/', '/blog/draft/', '/blog/escaping/', '/blog/override/', '/blog/syndicated/', '/blog/old/', '/blog/covered/', '/blog/implicit/']);
       expect(listing.preview).toBe('Unpublished preview'.repeat(3));
       await expectHttpPng(`${server.origin}/og/blog.png`);
     } finally { await server.stop(); }
